@@ -7,6 +7,7 @@ const userRoutes = require('./routes/user')
 const challengeRoutes = require('./routes/challenges')
 const sportEventsRoutes = require('./routes/sportEvents')
 const adviceRoutes = require('./routes/advices')
+const notificationRoutes = require('./routes/notifications')
 
 // express app
 const app = express()
@@ -25,6 +26,7 @@ app.use('/api/user', userRoutes)
 app.use('/api/challenges', challengeRoutes)
 app.use('/api/sportevents', sportEventsRoutes)
 app.use('/api/advices', adviceRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

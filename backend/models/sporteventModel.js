@@ -15,11 +15,20 @@ const sporteventSchema = new Schema({
     type: Date,
     required: true
   },
-  group_id: {
-    type: Number,
-    required: true
-  },
-  user_id: {
+  group_members: [
+    {
+      user_id: {
+        type: String,
+        joined_at: Date,
+        required: true
+      },
+      joined_at: {
+        type: Date,
+        required: true
+      }
+    }
+  ],
+  creator_id: {
     type: String,
     required: true
   }

@@ -17,17 +17,21 @@ const challengeSchema = new Schema({
   },
   ratings: {
     type: Number,
-    required: true
+    required: false
   },
-  creator: {
-    type: String,
-    required: true
-  },
-  group_id: {
-    type: Number,
-    required: true
-  },
-  user_id: {
+  group_members: [
+    {
+      user_id: {
+        type: String,
+        required: true
+      },
+      joined_at: {
+        type: Date,
+        required: true
+      }
+    }
+  ],
+  creator_id: {
     type: String,
     required: true
   }

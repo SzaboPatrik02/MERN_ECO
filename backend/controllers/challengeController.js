@@ -3,12 +3,22 @@ const mongoose = require('mongoose')
 
 // get all workouts
 const getChallenges = async (req, res) => {
-  const user_id = req.user._id
+  try {
+    const user_id = req.user._id; // Az aktuális felhasználó ID-ja
 
-  const challenges = await Challenge.find({user_id}).sort({createdAt: -1})
+    const challenges = await Challenge.find({
+      $or: [
+        { creator_id: user_id }, // Ha a felhasználó a kihívás létrehozója
+        { "group_members.user_id": user_id } // Ha benne van a csoporttagok között
+      ]
+    }).sort({ createdAt: -1 });
 
-  res.status(200).json(challenges)
+    res.status(200).json(challenges);
+  } catch (error) {
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
 }
+
 
 // get a single workout
 const getChallenge = async (req, res) => {
@@ -30,7 +40,7 @@ const getChallenge = async (req, res) => {
 
 // create new workout
 const createChallenge = async (req, res) => {
-  const {name, description, valid_until, ratings, creator, group_id } = req.body
+  const {name, description, valid_until, ratings, group_members } = req.body
 
   let emptyFields = []
 
@@ -43,14 +53,8 @@ const createChallenge = async (req, res) => {
   if(!valid_until) {
     emptyFields.push('valid_until')
   }
-  if(!ratings) {
-    emptyFields.push('ratings')
-  }
-  if(!creator) {
-    emptyFields.push('creator')
-  }
-  if(!group_id) {
-    emptyFields.push('group_id')
+  if(!group_members) {
+    emptyFields.push('group_members')
   }
   
   if(emptyFields.length > 0) {
@@ -59,8 +63,26 @@ const createChallenge = async (req, res) => {
 
   // add doc to db
   try {
-    const user_id = req.user._id
-    const challenge = await Challenge.create({name, description, valid_until, ratings, creator, group_id, user_id})
+    const creator_id = req.user._id
+
+    const creatorUserId = creator_id
+    const otherUserIds = group_members.map((member) => member.user_id)
+
+    const members = [{
+      user_id: creatorUserId,
+      joined_at: new Date()
+    }];
+
+    if (otherUserIds && otherUserIds.length > 0) {
+      otherUserIds.forEach((userId) => {
+        members.push({
+          user_id: userId,
+          joined_at: new Date()
+        });
+      });
+    }
+
+    const challenge = await Challenge.create({name, description, valid_until, ratings, group_members: members, creator_id})
     res.status(200).json(challenge)
   } catch (error) {
     res.status(400).json({error: error.message})
@@ -92,7 +114,7 @@ const updateChallenge = async (req, res) => {
     return res.status(404).json({error: 'No such challenge'})
   }
 
-  const challenge = await Workout.findOneAndUpdate({_id: id}, {
+  const challenge = await Challenge.findOneAndUpdate({_id: id}, {
     ...req.body
   })
 

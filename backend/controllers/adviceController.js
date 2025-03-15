@@ -5,7 +5,12 @@ const mongoose = require('mongoose')
 const getAdvices = async (req, res) => {
   const user_id = req.user._id
 
-  const advices = await Advice.find({user_id}).sort({createdAt: -1})
+  const advices = await Advice.find({
+    $or: [
+      { receiver_id: user_id },
+      { creator_id: user_id }
+    ]
+  }).sort({createdAt: -1})
 
   res.status(200).json(advices)
 }
@@ -35,13 +40,13 @@ const createAdvice = async (req, res) => {
   let emptyFields = []
 
   if(!receiver_id) {
-    emptyFields.push('name')
+    emptyFields.push('receiver_id')
   }
   if(!type) {
-    emptyFields.push('description')
+    emptyFields.push('type')
   }
   if(!content) {
-    emptyFields.push('valid_until')
+    emptyFields.push('content')
   }
   
   if(emptyFields.length > 0) {
@@ -50,8 +55,8 @@ const createAdvice = async (req, res) => {
 
   // add doc to db
   try {
-    const user_id = req.user._id
-    const advice = await Advice.create({receiver_id, type, content, user_id})
+    const creator_id = req.user._id
+    const advice = await Advice.create({receiver_id, type, content, creator_id})
     res.status(200).json(advice)
   } catch (error) {
     res.status(400).json({error: error.message})

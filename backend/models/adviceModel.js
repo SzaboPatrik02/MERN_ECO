@@ -15,7 +15,7 @@ const adviceSchema = new Schema({
     type: String,
     required: true
   },
-  user_id: {
+  creator_id: {
     type: String,
     required: true
   }

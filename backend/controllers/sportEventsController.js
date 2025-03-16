@@ -1,4 +1,5 @@
 const Sportevent = require('../models/sporteventModel')
+const User = require('../models/userModel')
 const mongoose = require('mongoose')
 
 // get all workouts
@@ -67,21 +68,39 @@ const createSportevent = async (req, res) => {
     const creatorUserId = creator_id
     const otherUserIds = group_members.map((member) => member.user_id)
 
-    const members = [{
-      user_id: creatorUserId,
-      joined_at: new Date()
-    }];
+    const members = []
 
-    if (otherUserIds && otherUserIds.length > 0) {
-      otherUserIds.forEach((userId) => {
+    if (!otherUserIds.some(userId => userId.toString() === creatorUserId.toString())) {
+      members.push({
+        user_id: creatorUserId,
+        joined_at: new Date()
+      });
+    }
+
+      otherUserIds.forEach(userId => {
         members.push({
           user_id: userId,
           joined_at: new Date()
         });
       });
-    }
 
     const event = await Sportevent.create({ name, description, event_date, group_members: members, creator_id })
+
+    const notifications = {
+      sender_id: creator_id,
+      content: 'You have received a new event',
+      related_id: event._id,
+      received_at: new Date(),
+      read: false
+    }
+
+    for (const member of group_members) {
+        await User.updateOne(
+          { _id: member.user_id },
+          { $push: { notifications: notifications } }
+        )
+    }
+
     res.status(200).json(event)
   } catch (error) {
     res.status(400).json({ error: error.message })

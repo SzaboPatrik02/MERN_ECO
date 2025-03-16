@@ -1,4 +1,5 @@
 const Challenge = require('../models/challengeModel')
+const User = require('../models/userModel')
 const mongoose = require('mongoose')
 
 // get all workouts
@@ -68,21 +69,41 @@ const createChallenge = async (req, res) => {
     const creatorUserId = creator_id
     const otherUserIds = group_members.map((member) => member.user_id)
 
-    const members = [{
-      user_id: creatorUserId,
-      joined_at: new Date()
-    }];
+    const members = []
 
-    if (otherUserIds && otherUserIds.length > 0) {
-      otherUserIds.forEach((userId) => {
+    if (!otherUserIds.some(userId => userId.toString() === creatorUserId.toString())) {
+      members.push({
+        user_id: creatorUserId,
+        joined_at: new Date()
+      });
+    }
+
+      otherUserIds.forEach(userId => {
         members.push({
           user_id: userId,
           joined_at: new Date()
         });
       });
-    }
 
     const challenge = await Challenge.create({name, description, valid_until, ratings, group_members: members, creator_id})
+
+    const notifications = {
+      sender_id: creator_id,
+      content: 'You have received a new challenge',
+      related_id: challenge._id,
+      received_at: new Date(),
+      read: false
+    }
+
+    for (const member of group_members) {
+      if (member.user_id !== creator_id) {
+        await User.updateOne(
+          { _id: member.user_id },
+          { $push: { notifications: notifications }}
+        )
+      }
+    }
+
     res.status(200).json(challenge)
   } catch (error) {
     res.status(400).json({error: error.message})

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require('bcrypt')
 const validator = require('validator')
 
@@ -13,8 +14,21 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
-  }
-})
+  },
+  role: {
+    type: String,
+    default: 'user'
+  },
+  notifications: [
+    {
+      sender_id: ObjectId,
+      content: String,
+      related_id: ObjectId, // Az adott esemény/challenge/advice ID-ja
+      received_at: { type: Date, default: Date.now },
+      read: { type: Boolean, default: false }
+    }
+  ]
+}, { timestamps: true })
 
 // static signup method
 userSchema.statics.signup = async function(email, password) {

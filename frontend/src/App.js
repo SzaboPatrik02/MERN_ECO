@@ -4,6 +4,7 @@ import { useAuthContext } from './hooks/useAuthContext'
 // pages & components
 import Home from './pages/Home'
 import Advices from './pages/Advices'
+import Challenges from './pages/Challenges'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Navbar from './components/Navbar'
@@ -24,6 +25,10 @@ function App() {
             <Route 
               path="/advices" 
               element={user ? <Advices /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/challenges" 
+              element={user ? <Challenges /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/login" 

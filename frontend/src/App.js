@@ -5,6 +5,7 @@ import { useAuthContext } from './hooks/useAuthContext'
 import Home from './pages/Home'
 import Advices from './pages/Advices'
 import Challenges from './pages/Challenges'
+import Events from './pages/Events'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Navbar from './components/Navbar'
@@ -21,6 +22,10 @@ function App() {
             <Route 
               path="/" 
               element={user ? <Home /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/sportevents" 
+              element={user ? <Events /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/advices" 

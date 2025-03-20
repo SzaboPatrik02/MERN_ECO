@@ -14,11 +14,12 @@ const Navbar = () => {
     <header>
       <div className="container">
         <Link to="/">
-          <h1>Workout Buddy</h1>
+          <h1>Eco Environment</h1>
         </Link>
         <nav>
           {user && (
             <div>
+              <Link to="/notifications">Notifications</Link>
               <Link to="/sportevents">Events</Link>
               <Link to="/challenges">Challenges</Link>
               <Link to="/advices">Advices</Link>

@@ -3,7 +3,7 @@ import { createContext, useReducer } from "react";
 export const AdvicesContext = createContext()
 
 export const advicesReducer = (state, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case 'SET_ADVICES':
             return {
                 advices: action.payload
@@ -16,6 +16,12 @@ export const advicesReducer = (state, action) => {
             return {
                 advices: state.advices.filter((w) => w._id !== action.payload._id)
             }
+        case 'UPDATE_ADVICE':
+            return {
+                advices: state.advices.map((w) =>
+                    w._id === action.payload._id ? action.payload : w
+                )
+            }
         default:
             return state
     }
@@ -23,14 +29,14 @@ export const advicesReducer = (state, action) => {
 
 export const AdvicesContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(advicesReducer, {
-        workouts: null
+        advices: null
     })
 
-    
+
 
     return (
-        <AdvicesContext.Provider value={{...state, dispatch}}>
-            { children }
+        <AdvicesContext.Provider value={{ ...state, dispatch }}>
+            {children}
         </AdvicesContext.Provider>
     )
 }

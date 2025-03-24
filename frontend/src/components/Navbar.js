@@ -19,6 +19,7 @@ const Navbar = () => {
         <nav>
           {user && (
             <div>
+              <Link to="/workouts">Workouts</Link>
               <Link to="/notifications">Notifications</Link>
               <Link to="/sportevents">Events</Link>
               <Link to="/challenges">Challenges</Link>

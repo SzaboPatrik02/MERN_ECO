@@ -6,7 +6,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import moment from 'moment'
 
-const ChallengeDetails = ({ challenge }) => {
+const ChallengeDetails = ({ challenge, isMainPage }) => {
   const { dispatch } = useChallengesContext()
   const { user } = useAuthContext()
 
@@ -18,6 +18,47 @@ const ChallengeDetails = ({ challenge }) => {
   const [valid_until, setValid_until] = useState(challenge.valid_until)
   const [group_members, setGroup_members] = useState(challenge.group_members)
   const [creator_id, setCreator_id] = useState(challenge.creator_id)
+
+  const handleJoin = async () => {
+    if (!user) return;
+  
+    // Ha a felhasználó már tag, ne adja hozzá újra
+    if (group_members.some(member => member.user_id === user.user_id)) {
+      alert("Már feliratkoztál erre a kihívásra!");
+      return;
+    }
+
+    const updatedGroupMembers = [...group_members];
+  
+    // Új belépő objektuma
+    const newMember = {
+      user_id: user.user_id, // A bejelentkezett felhasználó azonosítója
+      joined_at: new Date().toISOString() // Az aktuális dátum és idő
+    };
+    console.log("newMember:", newMember);
+
+    updatedGroupMembers.push(newMember);
+  
+    const response = await fetch(`/api/challenges/${challenge._id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ group_members: updatedGroupMembers }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user.token}`,
+      },
+    });
+  
+    const json = await response.json();
+    console.log("Szerver válasza:", json);
+  
+    if (response.ok) {
+      console.log("User objektum:", user);
+      setGroup_members(updatedGroupMembers); // Frissítjük a state-et
+      dispatch({ type: 'UPDATE_CHALLENGE', payload: json }); // Context frissítése
+    } else {
+      alert(json.error);
+    }
+  };
 
   const handleDelete = async () => {
     if (!user) {
@@ -90,8 +131,14 @@ const ChallengeDetails = ({ challenge }) => {
         </form>
       ) : (
         < div >
-          <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
-          <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+          {!isMainPage ? (
+            <div>
+              <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
+              <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+            </div>
+          ) : (
+            <span className="add material-symbols-outlined" onClick={handleJoin}>add</span>
+          )}
           <h4>{challenge.name}</h4>
           <p><strong>Description: </strong>{challenge.description}</p>
           <p><strong>Valid until: </strong>{moment(challenge.valid_until).format('YYYY-MM-DD HH:mm')}</p>

@@ -5,7 +5,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-const WorkoutDetails = ({ workout }) => {
+const WorkoutDetails = ({ workout, isMainPage }) => {
   const { dispatch } = useWorkoutsContext()
   const { user } = useAuthContext()
 
@@ -51,19 +51,18 @@ const WorkoutDetails = ({ workout }) => {
     })
 
     const json = await response.json()
-    console.log("Szerver válasz:", json);
 
     if (response.ok) {
 
       setIsEditing(false)
 
       dispatch({ type: 'UPDATE_WORKOUT', payload: json })
-      
+
     }
   }
 
   useEffect(() => {
-    if (editedWorkout) { // Ha az editedWorkout state megváltozik
+    if (editedWorkout) {
       setTitle(editedWorkout.title);
       setLoad(editedWorkout.load);
       setReps(editedWorkout.reps);
@@ -86,15 +85,18 @@ const WorkoutDetails = ({ workout }) => {
         </form>
       ) : (
         <div>
-        <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
-        <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+          {!isMainPage ? (
+            <div>
+              <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
+              <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+            </div>
+          ) : (
+            <span className="add material-symbols-outlined" onClick>add</span>
+          )}
           <h4>{workout.title}</h4>
           <p><strong>Load (kg): </strong>{workout.load}</p>
           <p><strong>Reps: </strong>{workout.reps}</p>
           <p>{formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}</p>
-          <div>
-          
-          </div>
         </div>
       )}
     </div>

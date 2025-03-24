@@ -11,7 +11,7 @@ const Advices = () => {
   const {user} = useAuthContext()
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
+    const fetchAdvices = async () => {
       const response = await fetch('/api/advices', {
         headers: {'Authorization': `Bearer ${user.token}`},
       })
@@ -23,7 +23,7 @@ const Advices = () => {
     }
 
     if (user) {
-      fetchWorkouts()
+      fetchAdvices()
     }
   }, [dispatch, user, advices])
 

@@ -19,7 +19,6 @@ const sporteventSchema = new Schema({
     {
       user_id: {
         type: String,
-        joined_at: Date,
         required: true
       },
       joined_at: {

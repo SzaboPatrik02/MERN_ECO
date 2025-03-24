@@ -1,40 +1,44 @@
-import { useEffect }from 'react'
+import { useEffect, useState } from 'react'
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
 // components
+import ChallengeDetails from '../components/ChallengeDetails'
 import WorkoutDetails from '../components/WorkoutDetails'
-import WorkoutForm from '../components/WorkoutForm'
+import EventDetails from '../components/EventDetails'
+import AdviceDetails from '../components/AdviceDetails'
 
 const Home = () => {
-  const {workouts, dispatch} = useWorkoutsContext()
-  const {user} = useAuthContext()
+
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
-      const response = await fetch('/api/workouts', {
-        headers: {'Authorization': `Bearer ${user.token}`},
+    fetch('/api')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setData(data);
       })
-      const json = await response.json()
-
-      if (response.ok) {
-        dispatch({type: 'SET_WORKOUTS', payload: json})
-      }
-    }
-
-    if (user) {
-      fetchWorkouts()
-    }
-  }, [dispatch, user, workouts])
+      .catch(error => console.error("Error fetching data:", error));
+  }, []);
 
   return (
     <div className="home">
       <div className="workouts">
-        {workouts && workouts.map((workout) => (
-          <WorkoutDetails key={workout._id} workout={workout} />
-        ))}
+        {data && data.map((d) => {
+          if (d.type === 'challenge') {
+            return<ChallengeDetails key={d._id} challenge={d} isMainPage={true}/>
+          } else if (d.type === 'workout') {
+            return <WorkoutDetails key={d._id} workout={d} isMainPage={true}/>
+          } else if (d.type === 'advice') {
+            return <AdviceDetails key={d._id} advice={d} isMainPage={true}/>
+          } else if (d.type === 'sportevent') {
+            return <EventDetails key={d._id} event={d} isMainPage={true}/>
+          }
+          //return null
+        })
+        }
       </div>
-      <WorkoutForm />
     </div>
   )
 }

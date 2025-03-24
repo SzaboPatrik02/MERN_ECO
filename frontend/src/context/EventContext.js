@@ -3,7 +3,7 @@ import { createContext, useReducer } from "react";
 export const EventsContext = createContext()
 
 export const eventsReducer = (state, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case 'SET_SPORTEVENTS':
             return {
                 sportevents: action.payload
@@ -16,6 +16,12 @@ export const eventsReducer = (state, action) => {
             return {
                 sportevents: state.sportevents.filter((w) => w._id !== action.payload._id)
             }
+        case 'UPDATE_SPORTEVENT':
+            return {
+                sportevents: state.sportevents.map((w) =>
+                    w._id === action.payload._id ? action.payload : w
+                )
+            }
         default:
             return state
     }
@@ -26,11 +32,11 @@ export const EventsContextProvider = ({ children }) => {
         sportevents: null
     })
 
-    
+
 
     return (
-        <EventsContext.Provider value={{...state, dispatch}}>
-            { children }
+        <EventsContext.Provider value={{ ...state, dispatch }}>
+            {children}
         </EventsContext.Provider>
     )
 }

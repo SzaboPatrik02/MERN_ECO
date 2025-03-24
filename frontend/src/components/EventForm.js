@@ -71,7 +71,7 @@ const EventForm = () => {
 
       <label>Event date:</label>
       <input 
-        type="date"
+        type="datetime-local"
         onChange={(e) => setEventDate(e.target.value)}
         value={event_date}
         className={emptyFields.includes('event_date') ? 'error' : ''}

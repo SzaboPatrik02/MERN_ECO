@@ -3,7 +3,7 @@ import { createContext, useReducer } from "react";
 export const ChallengesContext = createContext()
 
 export const challengesReducer = (state, action) => {
-    switch(action.type) {
+    switch (action.type) {
         case 'SET_CHALLENGES':
             return {
                 challenges: action.payload
@@ -16,6 +16,12 @@ export const challengesReducer = (state, action) => {
             return {
                 challenges: state.challenges.filter((w) => w._id !== action.payload._id)
             }
+        case 'UPDATE_CHALLENGE':
+            return {
+                challenges: state.challenges.map((w) =>
+                    w._id === action.payload._id ? action.payload : w
+                )
+            }
         default:
             return state
     }
@@ -26,11 +32,11 @@ export const ChallengesContextProvider = ({ children }) => {
         challenges: null
     })
 
-    
+
 
     return (
-        <ChallengesContext.Provider value={{...state, dispatch}}>
-            { children }
+        <ChallengesContext.Provider value={{ ...state, dispatch }}>
+            {children}
         </ChallengesContext.Provider>
     )
 }

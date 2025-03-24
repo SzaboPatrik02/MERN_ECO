@@ -73,7 +73,7 @@ const ChallengeForm = () => {
 
       <label>Valid_until:</label>
       <input 
-        type="date"
+        type="datetime-local"
         onChange={(e) => setValidUntil(e.target.value)}
         value={valid_until}
         className={emptyFields.includes('valid_until') ? 'error' : ''}

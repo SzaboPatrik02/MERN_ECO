@@ -25,7 +25,7 @@ const Events = () => {
     if (user) {
         fetchEvents()
     }
-  }, [dispatch, user])
+  }, [dispatch, user, sportevents])
 
   return (
     <div className="home">

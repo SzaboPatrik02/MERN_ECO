@@ -25,7 +25,7 @@ const Challenges = () => {
     if (user) {
         fetchChallenges()
     }
-  }, [dispatch, user])
+  }, [dispatch, user, challenges])
 
   return (
     <div className="home">

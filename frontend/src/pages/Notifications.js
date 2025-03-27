@@ -24,7 +24,7 @@ const Notifications = () => {
     if (user) {
         fetchNotifications()
     }
-  }, [dispatch, user])
+  }, [dispatch, user, notifications])
 
   return (
     <div className="home">

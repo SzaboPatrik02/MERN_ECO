@@ -24,7 +24,7 @@ const Navbar = () => {
               <Link to="/sportevents">Events</Link>
               <Link to="/challenges">Challenges</Link>
               <Link to="/advices">Advices</Link>
-              <span>{user.email}</span>
+              <span>{user.username}</span>
               <button onClick={handleClick}>Log out</button>
             </div>
           )}

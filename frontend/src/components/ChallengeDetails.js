@@ -18,27 +18,54 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   const [valid_until, setValid_until] = useState(challenge.valid_until)
   const [group_members, setGroup_members] = useState(challenge.group_members)
   const [creator_id, setCreator_id] = useState(challenge.creator_id)
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!user) return;
+
+      try {
+        const response = await fetch('/api/user', {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        console.log("Felhasználók betöltve:", data);
+
+        if (response.ok) {
+          setUsers(data);
+        } else {
+          console.error("Hiba a felhasználók lekérdezésekor:", data.error);
+        }
+      } catch (error) {
+        console.error('Hálózati hiba:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [user]);
 
   const handleJoin = async () => {
     if (!user) return;
-  
-    // Ha a felhasználó már tag, ne adja hozzá újra
+
     if (group_members.some(member => member.user_id === user.user_id)) {
       alert("Már feliratkoztál erre a kihívásra!");
       return;
     }
 
     const updatedGroupMembers = [...group_members];
-  
-    // Új belépő objektuma
+
     const newMember = {
-      user_id: user.user_id, // A bejelentkezett felhasználó azonosítója
-      joined_at: new Date().toISOString() // Az aktuális dátum és idő
+      user_id: user.user_id,
+      joined_at: new Date().toISOString()
     };
     console.log("newMember:", newMember);
 
     updatedGroupMembers.push(newMember);
-  
+
     const response = await fetch(`/api/challenges/${challenge._id}`, {
       method: 'PATCH',
       body: JSON.stringify({ group_members: updatedGroupMembers }),
@@ -47,14 +74,14 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
         'Authorization': `Bearer ${user.token}`,
       },
     });
-  
+
     const json = await response.json();
     console.log("Szerver válasza:", json);
-  
+
     if (response.ok) {
       console.log("User objektum:", user);
-      setGroup_members(updatedGroupMembers); // Frissítjük a state-et
-      dispatch({ type: 'UPDATE_CHALLENGE', payload: json }); // Context frissítése
+      setGroup_members(updatedGroupMembers);
+      dispatch({ type: 'UPDATE_CHALLENGE', payload: json });
     } else {
       alert(json.error);
     }
@@ -145,9 +172,12 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
           <p><strong>Ratings: </strong>{challenge.ratings}</p>
 
           <p><strong>Group Members:</strong></p>
-          {challenge.group_members.map((member, index) => (
-            <p key={index}>{member.user_id}</p>
-          ))}
+          <ul>
+            {challenge.group_members.map((member, index) => {
+              const userInfo = users.find(u => u._id === member.user_id);
+              return <li key={index}>{userInfo ? userInfo.username : "Ismeretlen felhasználó"}</li>;
+            })}
+          </ul>
           <p>{formatDistanceToNow(new Date(challenge.createdAt), { addSuffix: true })}</p>
         </div >
       )}

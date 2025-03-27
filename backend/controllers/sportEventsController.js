@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 // get all workouts
 const getSportevents = async (req, res) => {
   try {
-    const user_id = req.user._id; // Az aktuális felhasználó ID-ja
+    const user_id = req.user._id;
 
     const events = await Sportevent.find({
       $or: [
@@ -132,6 +132,7 @@ const updateSportevent = async (req, res) => {
     return res.status(404).json({ error: 'No such event' })
   }
 
+  console.log("req.body:", req.body);
   const event = await Sportevent.findOneAndUpdate({ _id: id }, {
     ...req.body
   })

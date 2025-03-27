@@ -1,7 +1,7 @@
 const Advice = require('../models/adviceModel')
 const Challenge = require('../models/challengeModel')
 const Sportevent = require('../models/sporteventModel')
-const Workout = require('../models/workoutModel')
+const Workout = require('../models/WorkoutModel')
 
 const getAllData = async (req, res) => {
     try {

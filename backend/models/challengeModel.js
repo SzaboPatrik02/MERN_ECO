@@ -31,6 +31,11 @@ const challengeSchema = new Schema({
       }
     }
   ],
+  type: {
+    type: String,
+    required: true,
+    default: 'challenge'
+  },
   creator_id: {
     type: String,
     required: true

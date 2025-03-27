@@ -1,7 +1,7 @@
 const express = require('express')
 
 // controller functions
-const { loginUser, signupUser, getNotifications, deleteNotification } = require('../controllers/userController')
+const { loginUser, signupUser, getNotifications, deleteNotification, getUsers } = require('../controllers/userController')
 const requireAuth = require('../middleware/requireAuth')
 
 const router = express.Router()
@@ -14,6 +14,8 @@ router.post('/signup', signupUser)
 
 // require auth for all user routes
 router.use(requireAuth)
+
+router.get('/', getUsers)
 
 // get notifications route
 router.get('/notifications', getNotifications)

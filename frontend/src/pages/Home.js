@@ -6,7 +6,6 @@ import { useAuthContext } from "../hooks/useAuthContext"
 import ChallengeDetails from '../components/ChallengeDetails'
 import WorkoutDetails from '../components/WorkoutDetails'
 import EventDetails from '../components/EventDetails'
-import AdviceDetails from '../components/AdviceDetails'
 
 const Home = () => {
 
@@ -30,8 +29,6 @@ const Home = () => {
             return<ChallengeDetails key={d._id} challenge={d} isMainPage={true}/>
           } else if (d.type === 'workout') {
             return <WorkoutDetails key={d._id} workout={d} isMainPage={true}/>
-          } else if (d.type === 'advice') {
-            return <AdviceDetails key={d._id} advice={d} isMainPage={true}/>
           } else if (d.type === 'sportevent') {
             return <EventDetails key={d._id} event={d} isMainPage={true}/>
           }

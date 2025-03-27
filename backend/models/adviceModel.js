@@ -7,13 +7,14 @@ const adviceSchema = new Schema({
     type: String,
     required: true
   },
-  type: {
-    type: String,
-    required: true
-  },
   content: {
     type: String,
     required: true
+  },
+  type: {
+    type: String,
+    required: true,
+    default: 'advice'
   },
   creator_id: {
     type: String,

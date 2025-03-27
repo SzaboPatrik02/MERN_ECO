@@ -27,6 +27,11 @@ const sporteventSchema = new Schema({
       }
     }
   ],
+  type: {
+    type: String,
+    required: true,
+    default: 'sportevent'
+  },
   creator_id: {
     type: String,
     required: true

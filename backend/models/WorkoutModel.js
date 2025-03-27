@@ -15,6 +15,11 @@ const workoutSchema = new Schema({
     type: Number,
     required: true
   },
+  type: {
+    type: String,
+    required: true,
+    default: 'workout'
+  },
   user_id: {
     type: String,
     required: true

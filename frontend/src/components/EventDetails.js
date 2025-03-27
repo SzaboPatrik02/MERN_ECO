@@ -7,7 +7,7 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import moment from 'moment'
 
 const EventDetails = ({ event, isMainPage }) => {
-  const { dispatch } = useEventsContext()
+  const { dispatch, sportevents } = useEventsContext()
   const { user } = useAuthContext()
 
   const [editedEvent, setEditedEvent] = useState(null);
@@ -21,9 +21,13 @@ const EventDetails = ({ event, isMainPage }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+    setGroup_members(event.group_members);
+  }, [event.group_members]);
+
+  useEffect(() => {
     const fetchUsers = async () => {
       if (!user) return;
-  
+
       try {
         const response = await fetch('/api/user', {
           headers: {
@@ -31,10 +35,10 @@ const EventDetails = ({ event, isMainPage }) => {
             'Content-Type': 'application/json'
           }
         });
-  
+
         const data = await response.json();
         console.log("Felhasználók betöltve:", data);
-  
+
         if (response.ok) {
           setUsers(data);
         } else {
@@ -44,7 +48,7 @@ const EventDetails = ({ event, isMainPage }) => {
         console.error('Hálózati hiba:', error);
       }
     };
-  
+
     fetchUsers();
   }, [user]);
 
@@ -52,38 +56,40 @@ const EventDetails = ({ event, isMainPage }) => {
     if (!user) return;
 
     if (group_members.some(member => member.user_id === user.user_id)) {
-      alert("Már feliratkoztál erre a kihívásra!");
+      alert("Már feliratkoztál erre az eseményre!");
       return;
     }
-
-    const updatedGroupMembers = [...group_members];
 
     const newMember = {
       user_id: user.user_id,
       joined_at: new Date().toISOString()
     };
-    console.log("newMember:", newMember);
 
-    updatedGroupMembers.push(newMember);
+    const updatedGroupMembers = [...group_members, newMember];
 
-    const response = await fetch(`/api/sportevents/${event._id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ group_members: updatedGroupMembers }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`/api/sportevents/${event._id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ group_members: updatedGroupMembers }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
 
-    const json = await response.json();
-    console.log("Szerver válasza:", json);
+      const json = await response.json();
 
-    if (response.ok) {
-      console.log("User objektum:", user);
-      setGroup_members(updatedGroupMembers);
-      dispatch({ type: 'UPDATE_SPORTEVENT', payload: json });
-    } else {
-      alert(json.error);
+      if (response.ok) {
+        setGroup_members(updatedGroupMembers);
+
+        dispatch({ type: 'UPDATE_SPORTEVENT', payload: json });
+
+        event.group_members = updatedGroupMembers;
+      } else {
+        alert(json.error);
+      }
+    } catch (error) {
+      console.error("Hiba történt a csatlakozás során:", error);
     }
   };
 

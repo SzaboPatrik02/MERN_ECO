@@ -64,9 +64,8 @@ const deleteNotification = async (req, res) => {
     }
 
     const userId = req.user._id;
-    const notificationId = req.params.id; // Feltételezzük, hogy az értesítés azonosítója a URL paraméterben van
+    const notificationId = req.params.id;
 
-    // Töröljük az értesítést a felhasználó értesítései közül
     await User.updateOne(
       { _id: userId },
       { $pull: { notifications: { _id: notificationId } } }

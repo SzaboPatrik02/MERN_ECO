@@ -9,6 +9,10 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
   const { dispatch } = useWorkoutsContext()
   const { user } = useAuthContext()
 
+  const [notificationSent, setNotificationSent] = useState(
+    localStorage.getItem(`notificationSent_${workout._id}`) === 'true'
+  );
+
   const [editedWorkout, setEditedWorkout] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false)
@@ -16,6 +20,43 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
   const [load, setLoad] = useState(workout.load)
   const [reps, setReps] = useState(workout.reps)
   //const [error, setError] = useState(null)
+
+  useEffect(() => {
+    localStorage.setItem(`notificationSent_${workout._id}`, notificationSent);
+  }, [notificationSent, workout._id]);
+
+  const handleNotifyCreator = async () => {
+    if (!user) return;
+
+    if (notificationSent) { 
+      alert("Már elküldted az értesítést a létrehozónak!");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`/api/workouts/${workout._id}/notify`, {
+        method: 'POST',
+        body: JSON.stringify({ joiningUserId: user.user_id }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+  
+      const json = await response.json();
+      console.log("Szerver válasza:", json);
+  
+      if (response.ok) {
+        alert("Értesítés elküldve a létrehozónak!");
+        setNotificationSent(true);
+      } else {
+        alert(json.error);
+      }
+    } catch (error) {
+      console.error("Hiba történt az értesítés küldése során:", error);
+      alert("Hiba történt az értesítés küldése során.");
+    }
+  };
 
   // TÖRLÉS (DELETE)
   const handleDelete = async () => {
@@ -91,7 +132,7 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
               <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
             </div>
           ) : (
-            <span className="add material-symbols-outlined" onClick>add</span>
+            <span className="add material-symbols-outlined" onClick={handleNotifyCreator}>add</span>
           )}
           <h4>{workout.title}</h4>
           <p><strong>Load (kg): </strong>{workout.load}</p>

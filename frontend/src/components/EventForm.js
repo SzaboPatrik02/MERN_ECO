@@ -34,7 +34,6 @@ const EventForm = () => {
     const json = await response.json()
 
     if (!response.ok) {
-      console.log("Server response:", json);
       setError(json.error)
       setEmptyFields(json.emptyFields)
     }

@@ -4,7 +4,8 @@ const {
   getWorkouts,
   getWorkout,
   deleteWorkout,
-  updateWorkout
+  updateWorkout,
+  notifyByWorkout
 } = require('../controllers/workoutController')
 const requireAuth = require('../middleware/requireAuth')
 
@@ -21,6 +22,8 @@ router.get('/:id', getWorkout)
 
 // POST a new workout
 router.post('/', createWorkout)
+
+router.post('/:id/notify', notifyByWorkout)
 
 // DELETE a workout
 router.delete('/:id', deleteWorkout)

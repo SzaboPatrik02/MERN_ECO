@@ -1,16 +1,26 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAdvicesContext } from "../hooks/useAdvicesContext"
 import { useAuthContext } from '../hooks/useAuthContext'
+import { useLocation } from "react-router-dom";
 
 const AdviceForm = () => {
   const { dispatch } = useAdvicesContext()
   const { user } = useAuthContext()
+
+  const location = useLocation()
+  const receiverId = location.state?.receiverId
 
   const [receiver_id, setReceiverId] = useState('')
   const [type, setType] = useState('')
   const [content, setContent] = useState('')
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
+
+  useEffect(() => {
+    if (receiverId) {
+      setReceiverId(receiverId);
+    }
+  }, [receiverId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -56,14 +66,6 @@ const AdviceForm = () => {
         onChange={(e) => setReceiverId(e.target.value)}
         value={receiver_id}
         className={emptyFields.includes('receiver_id') ? 'error' : ''}
-      />
-
-      <label>Type:</label>
-      <input 
-        type="text"
-        onChange={(e) => setType(e.target.value)}
-        value={type}
-        className={emptyFields.includes('type') ? 'error' : ''}
       />
 
       <label>Content:</label>

@@ -21,6 +21,10 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
+    setGroup_members(challenge.group_members);
+  }, [challenge.group_members]);
+
+  useEffect(() => {
     const fetchUsers = async () => {
       if (!user) return;
 
@@ -56,35 +60,39 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       return;
     }
 
-    const updatedGroupMembers = [...group_members];
-
     const newMember = {
       user_id: user.user_id,
       joined_at: new Date().toISOString()
     };
-    console.log("newMember:", newMember);
 
-    updatedGroupMembers.push(newMember);
+    const updatedGroupMembers = [...group_members, newMember];
 
-    const response = await fetch(`/api/challenges/${challenge._id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ group_members: updatedGroupMembers }),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`,
-      },
-    });
+    try {
+      const response = await fetch(`/api/challenges/${challenge._id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ group_members: updatedGroupMembers }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
 
-    const json = await response.json();
-    console.log("Szerver válasza:", json);
+      const json = await response.json();
 
-    if (response.ok) {
-      console.log("User objektum:", user);
-      setGroup_members(updatedGroupMembers);
-      dispatch({ type: 'UPDATE_CHALLENGE', payload: json });
-    } else {
-      alert(json.error);
+      if (response.ok) {
+        setGroup_members(updatedGroupMembers);
+
+        dispatch({ type: 'UPDATE_CHALLENGE', payload: json });
+
+        challenge.group_members = updatedGroupMembers;
+      } else {
+        alert(json.error);
+      }
+    } catch (error) {
+      console.error("Hiba történt a csatlakozás során:", error);
     }
+
+    
   };
 
   const handleDelete = async () => {

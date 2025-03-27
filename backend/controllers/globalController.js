@@ -1,16 +1,14 @@
-const Advice = require('../models/adviceModel')
 const Challenge = require('../models/challengeModel')
 const Sportevent = require('../models/sporteventModel')
-const Workout = require('../models/WorkoutModel')
+const Workout = require('../models/workoutModel')
 
 const getAllData = async (req, res) => {
     try {
-        const advices = await Advice.find()
         const challenges = await Challenge.find()
         const sportevents = await Sportevent.find()
         const workouts = await Workout.find()
 
-        const allData = [...advices, ...challenges, ...sportevents, ...workouts]
+        const allData = [...challenges, ...sportevents, ...workouts]
 
         allData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 

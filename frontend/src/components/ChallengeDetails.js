@@ -17,8 +17,12 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   const [description, setDescription] = useState(challenge.description)
   const [valid_until, setValid_until] = useState(challenge.valid_until)
   const [group_members, setGroup_members] = useState(challenge.group_members)
+  const [current_result, setCurrentResult] = useState(challenge.group_members.current_result)
   const [creator_id, setCreator_id] = useState(challenge.creator_id)
   const [users, setUsers] = useState([]);
+  const [userCurrentResult, setUserCurrentResult] = useState(
+    group_members.find(m => m.user_id === user.user_id)?.current_result || ""
+  );
 
   useEffect(() => {
     setGroup_members(challenge.group_members);
@@ -51,6 +55,16 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
 
     fetchUsers();
   }, [user]);
+
+  const handleCurrentResultChange = (e) => {
+    const newValue = e.target.value;
+
+    const updatedMembers = group_members.map(member =>
+      member.user_id === user.user_id ? { ...member, current_result: newValue } : member
+    );
+
+    setGroup_members(updatedMembers);
+  };
 
   const handleJoin = async () => {
     if (!user) return;
@@ -92,7 +106,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       console.error("Hiba történt a csatlakozás során:", error);
     }
 
-    
+
   };
 
   const handleDelete = async () => {
@@ -117,25 +131,37 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
     e.preventDefault()
     if (!user) return
 
-    const updatedChallenge = { name, description, valid_until, group_members, creator_id }
-
-    const response = await fetch(`/api/challenges/${challenge._id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updatedChallenge),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
+    const updatedMembers = group_members.map(member => {
+      if (member.user_id === user.user_id) {
+        return { ...member, current_result: userCurrentResult };
       }
-    })
+      return member;
+    });
 
-    const json = await response.json()
+    const updatedChallenge = { name, description, valid_until, group_members: updatedMembers, creator_id }
 
-    if (response.ok) {
+    console.log("Frissített adatok küldés előtt:", updatedChallenge);
 
-      setIsEditing(false)
+    try {
+      const response = await fetch(`/api/challenges/${challenge._id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updatedChallenge),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        }
+      });
 
-      dispatch({ type: 'UPDATE_CHALLENGE', payload: json })
+      const json = await response.json();
+      console.log("Szerver válasza:", json);
 
+      if (response.ok) {
+        setIsEditing(false);
+        setGroup_members(updatedMembers);
+        dispatch({ type: 'UPDATE_CHALLENGE', payload: json });
+      }
+    } catch (error) {
+      console.error("Hiba történt a módosítás során:", error);
     }
   }
 
@@ -159,8 +185,14 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
           <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
           <label>Valid until:</label>
           <input type="text" value={valid_until} onChange={(e) => setValid_until(e.target.value)} required />
-          <label>Group members:</label>
-          <input type="text" value={group_members} onChange={(e) => setGroup_members(e.target.value)} required />
+          <label>Current result:</label>
+          <input
+            type="text"
+            value={userCurrentResult}
+            onChange={(e) => setUserCurrentResult(e.target.value)}
+            required
+          />
+
           <button type="submit">Save</button>
           <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
         </form>
@@ -183,7 +215,11 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
           <ul>
             {challenge.group_members.map((member, index) => {
               const userInfo = users.find(u => u._id === member.user_id);
-              return <li key={index}>{userInfo ? userInfo.username : "Ismeretlen felhasználó"}</li>;
+              return (
+                <li key={index}>
+                  {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
+                  <p>{member.current_result}</p>
+                </li>);
             })}
           </ul>
           <p>{formatDistanceToNow(new Date(challenge.createdAt), { addSuffix: true })}</p>

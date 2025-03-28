@@ -12,6 +12,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
 
   const [editedChallenge, setEditedChallenge] = useState(null);
 
+  const [isEditingCurrentResult, setIsEditingCurrentResult] = useState(false);
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(challenge.name)
   const [description, setDescription] = useState(challenge.description)
@@ -57,13 +58,8 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   }, [user]);
 
   const handleCurrentResultChange = (e) => {
-    const newValue = e.target.value;
-
-    const updatedMembers = group_members.map(member =>
-      member.user_id === user.user_id ? { ...member, current_result: newValue } : member
-    );
-
-    setGroup_members(updatedMembers);
+    setIsEditing(true);
+    setIsEditingCurrentResult(true);
   };
 
   const handleJoin = async () => {
@@ -138,6 +134,9 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       return member;
     });
 
+    setIsEditing(true);
+    setIsEditingCurrentResult(false);
+
     const updatedChallenge = { name, description, valid_until, group_members: updatedMembers, creator_id }
 
     console.log("Frissített adatok küldés előtt:", updatedChallenge);
@@ -179,19 +178,34 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       {isEditing ? (
         <form onSubmit={handleEdit}>
           <h3>Edit Challenge</h3>
-          <label>name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-          <label>description:</label>
-          <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          <label>Valid until:</label>
-          <input type="text" value={valid_until} onChange={(e) => setValid_until(e.target.value)} required />
-          <label>Current result:</label>
-          <input
-            type="text"
-            value={userCurrentResult}
-            onChange={(e) => setUserCurrentResult(e.target.value)}
-            required
-          />
+          
+          {isEditingCurrentResult ? (
+      <div>
+        <label>Current result:</label>
+        <input
+          type="text"
+          value={userCurrentResult}
+          onChange={(e) => setUserCurrentResult(e.target.value)}
+          required
+        />
+      </div>
+    ) : (
+      <div>
+        <label>Name:</label>
+        <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+        <label>Description:</label>
+        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
+        <label>Valid until:</label>
+        <input type="text" value={valid_until} onChange={(e) => setValid_until(e.target.value)} required />
+        <label>Current result:</label>
+        <input
+          type="text"
+          value={userCurrentResult}
+          onChange={(e) => setUserCurrentResult(e.target.value)}
+          required
+        />
+      </div>
+    )}
 
           <button type="submit">Save</button>
           <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
@@ -202,6 +216,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
             <div>
               <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
               <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+              <span className="edit material-symbols-outlined" onClick={handleCurrentResultChange}>add</span>
             </div>
           ) : (
             <span className="add material-symbols-outlined" onClick={handleJoin}>add</span>

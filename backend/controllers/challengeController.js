@@ -127,19 +127,42 @@ const deleteChallenge = async (req, res) => {
 // update a workout
 const updateChallenge = async (req, res) => {
   const { id } = req.params
+  const { group_members, to_achive } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: 'No such challenge' })
   }
 
-  const challenge = await Challenge.findOneAndUpdate({_id: id}, {
+  const challenge = await Challenge.findOneAndUpdate({ _id: id }, {
     ...req.body
-  })
+  }, { new: true })
 
   if (!challenge) {
-    return res.status(400).json({error: 'No such workout'})
+    return res.status(400).json({ error: 'No such workout' })
   }
 
+  console.log("Challenge eloszor:", challenge)
+
+
+  for (const member of challenge.group_members) {
+    if (member.current_result === to_achive) {
+
+      const notification = {
+        sender_id: req.user._id,
+        content: `Gratulálok! Teljesítetted a(z) "${challenge.name}" kihívást!`,
+        related_id: id,
+        received_at: new Date(),
+        read: false,
+        type: "challenge_completed"
+      };
+
+      await User.updateOne(
+        { _id: member.user_id },
+        { $push: { notifications: notification } }
+      );
+    }
+  }
+  console.log("Challenge amsodiszor:", challenge)
   res.status(200).json(challenge)
 }
 

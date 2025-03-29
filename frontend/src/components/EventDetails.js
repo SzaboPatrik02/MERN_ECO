@@ -212,7 +212,6 @@ const EventDetails = ({ event, isMainPage }) => {
                 value={userGuess}
                 onChange={(e) => setUserGuess(e.target.value)}
                 placeholder="X - Y"
-                required
               />
               <label>Result:</label>
               <input type="text" value={result} onChange={(e) => setResult(e.target.value)} placeholder="X - Y" />

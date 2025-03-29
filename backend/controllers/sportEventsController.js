@@ -77,12 +77,12 @@ const createSportevent = async (req, res) => {
       });
     }
 
-      otherUserIds.forEach(userId => {
-        members.push({
-          user_id: userId,
-          joined_at: new Date()
-        });
+    otherUserIds.forEach(userId => {
+      members.push({
+        user_id: userId,
+        joined_at: new Date()
       });
+    });
 
     const event = await Sportevent.create({ name, description, event_date, group_members: members, creator_id })
 
@@ -95,10 +95,10 @@ const createSportevent = async (req, res) => {
     }
 
     for (const member of group_members) {
-        await User.updateOne(
-          { _id: member.user_id },
-          { $push: { notifications: notifications } }
-        )
+      await User.updateOne(
+        { _id: member.user_id },
+        { $push: { notifications: notifications } }
+      )
     }
 
     res.status(200).json(event)
@@ -127,18 +127,42 @@ const deleteSportevent = async (req, res) => {
 // update a workout
 const updateSportevent = async (req, res) => {
   const { id } = req.params
+  const { group_members, result } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: 'No such event' })
   }
 
-  console.log("req.body:", req.body);
   const event = await Sportevent.findOneAndUpdate({ _id: id }, {
-    ...req.body
-  })
+    ...req.body,
+  }, { new: true });
 
   if (!event) {
     return res.status(400).json({ error: 'No such event' })
+  }
+
+  if (result && result !== '...') {
+    for (const member of event.group_members) {
+      let notificationContent = `A(z) "${event.name}" esemény eredménye: ${result}.`;
+
+      if (member.guess === result) {
+        notificationContent += ' Eltaláltad a tippet!';
+      }
+
+      const notification = {
+        sender_id: req.user._id,
+        content: notificationContent,
+        related_id: id,
+        received_at: new Date(),
+        read: false,
+        type: "sport_event_result",
+      };
+
+      await User.updateOne(
+        { _id: member.user_id },
+        { $push: { notifications: notification } }
+      );
+    }
   }
 
   res.status(200).json(event)

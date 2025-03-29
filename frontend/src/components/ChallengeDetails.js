@@ -178,37 +178,44 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       {isEditing ? (
         <form onSubmit={handleEdit}>
           <h3>Edit Challenge</h3>
-          
+
           {isEditingCurrentResult ? (
-      <div>
-        <label>Current result:</label>
-        <input
-          type="text"
-          value={userCurrentResult}
-          onChange={(e) => setUserCurrentResult(e.target.value)}
-          required
-        />
-      </div>
-    ) : (
-      <div>
-        <label>Name:</label>
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-        <label>Description:</label>
-        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
-        <label>Valid until:</label>
-        <input type="text" value={valid_until} onChange={(e) => setValid_until(e.target.value)} required />
-        <label>Current result:</label>
-        <input
-          type="text"
-          value={userCurrentResult}
-          onChange={(e) => setUserCurrentResult(e.target.value)}
-          required
-        />
-      </div>
-    )}
+            <div>
+              <label>Current result:</label>
+              <input
+                type="text"
+                value={userCurrentResult}
+                onChange={(e) => setUserCurrentResult(e.target.value)}
+                required
+              />
+            </div>
+          ) : (
+            <div>
+              <label>Name:</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+              <label>Description:</label>
+              <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
+              <label>Valid until:</label>
+              <input type="text" value={valid_until} onChange={(e) => setValid_until(e.target.value)} required />
+              <label>Current result:</label>
+              <input
+                type="text"
+                value={userCurrentResult}
+                onChange={(e) => setUserCurrentResult(e.target.value)}
+                required
+              />
+            </div>
+          )}
 
           <button type="submit">Save</button>
-          <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsEditing(false);
+              setIsEditingCurrentResult(false);
+            }}
+          >
+            Cancel </button>
         </form>
       ) : (
         < div >

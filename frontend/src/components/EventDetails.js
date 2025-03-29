@@ -7,18 +7,25 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import moment from 'moment'
 
 const EventDetails = ({ event, isMainPage }) => {
-  const { dispatch, sportevents } = useEventsContext()
+  const { dispatch } = useEventsContext()
   const { user } = useAuthContext()
 
   const [editedEvent, setEditedEvent] = useState(null);
+
+  const [isEditingQuess, setIsEditingQuess] = useState(false);
 
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(event.name)
   const [description, setDescription] = useState(event.description)
   const [event_date, setEvent_date] = useState(event.event_date)
   const [group_members, setGroup_members] = useState(event.group_members)
+  const [result, setResult] = useState(event.result)
   const [creator_id, setCreator_id] = useState(event.creator_id)
   const [users, setUsers] = useState([]);
+
+  const [userGuess, setUserGuess] = useState(
+    group_members.find(m => m.user_id === user.user_id)?.guess || ""
+  );
 
   useEffect(() => {
     setGroup_members(event.group_members);
@@ -51,6 +58,11 @@ const EventDetails = ({ event, isMainPage }) => {
 
     fetchUsers();
   }, [user]);
+
+  const handleGuessChange = (e) => {
+    setIsEditing(true);
+    setIsEditingQuess(true);
+  };
 
   const handleJoin = async () => {
     if (!user) return;
@@ -115,25 +127,41 @@ const EventDetails = ({ event, isMainPage }) => {
     e.preventDefault()
     if (!user) return
 
-    const updatedEvent = { name, description, event_date, group_members, creator_id }
-
-    const response = await fetch(`/api/sportevents/${event._id}`, {
-      method: 'PATCH',
-      body: JSON.stringify(updatedEvent),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user.token}`
+    const updatedMembers = group_members.map(member => {
+      if (member.user_id === user.user_id) {
+        return { ...member, guess: userGuess };
       }
-    })
+      return member;
+    });
 
-    const json = await response.json()
+    setIsEditing(true);
+    setIsEditingQuess(false);
 
-    if (response.ok) {
+    const updatedEvent = { name, description, event_date, group_members: updatedMembers, result, creator_id }
 
-      setIsEditing(false)
+    console.log("Frissített adatok küldés előtt:", updatedEvent);
 
-      dispatch({ type: 'UPDATE_SPORTEVENT', payload: json })
+    try {
+      const response = await fetch(`/api/sportevents/${event._id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updatedEvent),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
 
+      const json = await response.json()
+
+      if (response.ok) {
+
+        setIsEditing(false)
+        setGroup_members(updatedMembers);
+        dispatch({ type: 'UPDATE_SPORTEVENT', payload: json })
+
+      }
+    } catch (error) {
+      console.error("Hiba történt a módosítás során:", error);
     }
   }
 
@@ -143,24 +171,63 @@ const EventDetails = ({ event, isMainPage }) => {
       setDescription(editedEvent.description);
       setEvent_date(editedEvent.event_date);
       setGroup_members(editedEvent.group_members);
+      setResult(editedEvent.result);
     }
   }, [editedEvent])
+
+  const isWinner = (result, guess) => {
+    return result && guess === result;
+  };
 
   return (
     <div className="workout-details">
       {isEditing ? (
         <form onSubmit={handleEdit}>
           <h3>Edit Event</h3>
-          <label>name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-          <label>description:</label>
-          <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
-          <label>Event date:</label>
-          <input type="text" value={event_date} onChange={(e) => setEvent_date(e.target.value)} required />
-          <label>Group members:</label>
-          <input type="text" value={group_members} onChange={(e) => setGroup_members(e.target.value)} required />
+
+          {isEditingQuess ? (
+            <div>
+              <label>Guess:</label>
+              <input
+                type="text"
+                value={userGuess}
+                onChange={(e) => setUserGuess(e.target.value)}
+                placeholder="X - Y"
+                required
+              />
+            </div>
+          ) : (
+            <div>
+              <label>name:</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+              <label>description:</label>
+              <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
+              <label>Event date:</label>
+              <input type="text" value={event_date} onChange={(e) => setEvent_date(e.target.value)} required />
+              <label>Group members:</label>
+              <input type="text" value={group_members} onChange={(e) => setGroup_members(e.target.value)} required />
+              <label>Guess:</label>
+              <input
+                type="text"
+                value={userGuess}
+                onChange={(e) => setUserGuess(e.target.value)}
+                placeholder="X - Y"
+                required
+              />
+              <label>Result:</label>
+              <input type="text" value={result} onChange={(e) => setResult(e.target.value)} placeholder="X - Y" />
+            </div>
+          )}
+
           <button type="submit">Save</button>
-          <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsEditing(false);
+              setIsEditingQuess(false);
+            }}
+          >
+          Cancel </button>
         </form>
       ) : (
         < div >
@@ -168,6 +235,7 @@ const EventDetails = ({ event, isMainPage }) => {
             <div>
               <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
               <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+              <span className="edit material-symbols-outlined" onClick={handleGuessChange}>add</span>
             </div>
           ) : (
             <span className="add material-symbols-outlined" onClick={handleJoin}>add</span>
@@ -180,9 +248,15 @@ const EventDetails = ({ event, isMainPage }) => {
           <ul>
             {event.group_members.map((member, index) => {
               const userInfo = users.find(u => u._id === member.user_id);
-              return <li key={index}>{userInfo ? userInfo.username : "Ismeretlen felhasználó"}</li>;
+              return (
+                <li key={index}>
+                  {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
+                  <p>{member.guess}</p>
+                  {isWinner(event.result, member.guess) && <p>WINNER!</p>}
+                </li>);
             })}
           </ul>
+          <p><strong>Result: </strong>{event.result}</p>
           <p>{formatDistanceToNow(new Date(event.createdAt), { addSuffix: true })}</p>
         </div >
       )}

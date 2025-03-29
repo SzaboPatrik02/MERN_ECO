@@ -21,12 +21,21 @@ const sporteventSchema = new Schema({
         type: String,
         required: true
       },
+      guess: {
+        type: String,
+        required: false
+      },
       joined_at: {
         type: Date,
         required: true
       }
     }
   ],
+  result: {
+    type: String,
+    required: true,
+    default: '...'
+  },
   type: {
     type: String,
     required: true,

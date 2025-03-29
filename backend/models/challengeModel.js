@@ -15,9 +15,9 @@ const challengeSchema = new Schema({
     type: Date,
     required: true
   },
-  ratings: {
+  to_achive: {
     type: Number,
-    required: false
+    required: true
   },
   group_members: [
     {
@@ -26,7 +26,7 @@ const challengeSchema = new Schema({
         required: true
       },
       current_result: {
-        type: String,
+        type: Number,
         required: false
       },
       joined_at: {

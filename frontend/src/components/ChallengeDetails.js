@@ -17,6 +17,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   const [name, setName] = useState(challenge.name)
   const [description, setDescription] = useState(challenge.description)
   const [valid_until, setValid_until] = useState(challenge.valid_until)
+  const [to_achive, setTo_achive] = useState(challenge.to_achive)
   const [group_members, setGroup_members] = useState(challenge.group_members)
   const [current_result, setCurrentResult] = useState(challenge.group_members.current_result)
   const [creator_id, setCreator_id] = useState(challenge.creator_id)
@@ -137,7 +138,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
     setIsEditing(true);
     setIsEditingCurrentResult(false);
 
-    const updatedChallenge = { name, description, valid_until, group_members: updatedMembers, creator_id }
+    const updatedChallenge = { name, description, valid_until, to_achive, group_members: updatedMembers, creator_id }
 
     console.log("Frissített adatok küldés előtt:", updatedChallenge);
 
@@ -170,8 +171,13 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       setDescription(editedChallenge.description);
       setValid_until(editedChallenge.valid_until);
       setGroup_members(editedChallenge.group_members);
+      setTo_achive(editedChallenge.to_achive);
     }
   }, [editedChallenge])
+
+  const isWinner = (to_achive, current_result) => {
+    return to_achive && current_result === to_achive;
+  };
 
   return (
     <div className="workout-details">
@@ -231,7 +237,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
           <h4>{challenge.name}</h4>
           <p><strong>Description: </strong>{challenge.description}</p>
           <p><strong>Valid until: </strong>{moment(challenge.valid_until).format('YYYY-MM-DD HH:mm')}</p>
-          <p><strong>Ratings: </strong>{challenge.ratings}</p>
+          <p><strong>To achive: </strong>{challenge.to_achive}</p>
 
           <p><strong>Group Members:</strong></p>
           <ul>
@@ -241,6 +247,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
                 <li key={index}>
                   {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
                   <p>{member.current_result}</p>
+                  {isWinner(challenge.to_achive, member.current_result) && <p>WINNER!</p>}
                 </li>);
             })}
           </ul>

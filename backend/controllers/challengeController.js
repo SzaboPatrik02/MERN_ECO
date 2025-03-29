@@ -26,39 +26,36 @@ const getChallenge = async (req, res) => {
   const { id } = req.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({error: 'No such challenge'})
+    return res.status(404).json({ error: 'No such challenge' })
   }
 
   const challenge = await Challenge.findById(id)
 
   if (!challenge) {
-    return res.status(404).json({error: 'No such challenge'})
+    return res.status(404).json({ error: 'No such challenge' })
   }
-  
+
   res.status(200).json(challenge)
 }
 
 
 // create new workout
 const createChallenge = async (req, res) => {
-  const {name, description, valid_until, ratings, group_members } = req.body
+  const { name, description, valid_until, to_achive, group_members } = req.body
 
   let emptyFields = []
 
-  if(!name) {
+  if (!name) {
     emptyFields.push('name')
   }
-  if(!description) {
+  if (!description) {
     emptyFields.push('description')
   }
-  if(!valid_until) {
+  if (!valid_until) {
     emptyFields.push('valid_until')
   }
-  if(!group_members) {
-    emptyFields.push('group_members')
-  }
-  
-  if(emptyFields.length > 0) {
+
+  if (emptyFields.length > 0) {
     return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
   }
 
@@ -78,14 +75,14 @@ const createChallenge = async (req, res) => {
       });
     }
 
-      otherUserIds.forEach(userId => {
-        members.push({
-          user_id: userId,
-          joined_at: new Date()
-        });
+    otherUserIds.forEach(userId => {
+      members.push({
+        user_id: userId,
+        joined_at: new Date()
       });
+    });
 
-    const challenge = await Challenge.create({name, description, valid_until, ratings, group_members: members, creator_id})
+    const challenge = await Challenge.create({ name, description, valid_until, to_achive, group_members: members, creator_id })
 
     const notifications = {
       sender_id: creator_id,
@@ -99,14 +96,14 @@ const createChallenge = async (req, res) => {
       if (member.user_id !== creator_id) {
         await User.updateOne(
           { _id: member.user_id },
-          { $push: { notifications: notifications }}
+          { $push: { notifications: notifications } }
         )
       }
     }
 
     res.status(200).json(challenge)
   } catch (error) {
-    res.status(400).json({error: error.message})
+    res.status(400).json({ error: error.message })
   }
 }
 
@@ -115,13 +112,13 @@ const deleteChallenge = async (req, res) => {
   const { id } = req.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({error: 'No such challenge'})
+    return res.status(404).json({ error: 'No such challenge' })
   }
 
-  const challenge = await Challenge.findOneAndDelete({_id: id})
+  const challenge = await Challenge.findOneAndDelete({ _id: id })
 
   if (!challenge) {
-    return res.status(400).json({error: 'No such challenge'})
+    return res.status(400).json({ error: 'No such challenge' })
   }
 
   res.status(200).json(challenge)
@@ -132,7 +129,7 @@ const updateChallenge = async (req, res) => {
   const { id } = req.params
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({error: 'No such challenge'})
+    return res.status(404).json({ error: 'No such challenge' })
   }
 
   const challenge = await Challenge.findOneAndUpdate({_id: id}, {

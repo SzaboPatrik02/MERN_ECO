@@ -9,7 +9,7 @@ const ChallengeForm = () => {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [valid_until, setValidUntil] = useState('')
-  const [ratings, setRatings] = useState('')
+  const [to_achive, setTo_achive] = useState('')
   const [group_members, setGroupMembers] = useState('')
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
@@ -22,7 +22,7 @@ const ChallengeForm = () => {
       return
     }
 
-    const challenge = {name, description, valid_until, ratings, group_members: Array.isArray(group_members) ? group_members : [] }
+    const challenge = {name, description, valid_until, to_achive, group_members: Array.isArray(group_members) ? group_members : [] }
 
     const response = await fetch('/api/challenges', {
       method: 'POST',
@@ -43,7 +43,7 @@ const ChallengeForm = () => {
       setName('')
       setDescription('')
       setValidUntil('')
-      setRatings('')
+      setTo_achive('')
       setGroupMembers('')
       setError(null)
       setEmptyFields([])
@@ -79,12 +79,12 @@ const ChallengeForm = () => {
         className={emptyFields.includes('valid_until') ? 'error' : ''}
       />
 
-      <label>Ratings:</label>
+      <label>To achive:</label>
       <input 
         type="number"
-        onChange={(e) => setRatings(e.target.value)}
-        value={ratings}
-        className={emptyFields.includes('ratings') ? 'error' : ''}
+        onChange={(e) => setTo_achive(e.target.value)}
+        value={to_achive}
+        className={emptyFields.includes('to_achive') ? 'error' : ''}
       />
 
       <button>Add Challenge</button>

@@ -27,7 +27,8 @@ const challengeSchema = new Schema({
       },
       current_result: {
         type: Number,
-        required: false
+        required: false,
+        default: 0
       },
       joined_at: {
         type: Date,

@@ -26,9 +26,13 @@ const userSchema = new Schema({
   },
   notifications: [
     {
-      sender_id: ObjectId,
+      sender_id: String,
       content: String,
       related_id: ObjectId,
+      type: {
+        type: String,
+        required: false,
+      },
       received_at: { type: Date, default: Date.now },
       read: { type: Boolean, default: false }
     }

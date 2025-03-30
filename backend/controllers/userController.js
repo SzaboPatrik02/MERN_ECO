@@ -12,14 +12,12 @@ const getUsers = async (req, res) => {
   res.status(200).json(users)
 }
 
-// login a user
 const loginUser = async (req, res) => {
   const { email, password } = req.body
 
   try {
     const user = await User.login(email, password)
 
-    // create a token
     const token = createToken(user._id)
 
     res.status(200).json({ email, username: user.username, token, user_id: user._id })
@@ -28,14 +26,12 @@ const loginUser = async (req, res) => {
   }
 }
 
-// signup a user
 const signupUser = async (req, res) => {
   const { email, username, password } = req.body
 
   try {
     const user = await User.signup(email, username, password)
 
-    // create a token
     const token = createToken(user._id)
 
     res.status(200).json({ email, username, token, user_id: user._id })

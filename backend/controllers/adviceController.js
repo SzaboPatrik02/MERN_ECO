@@ -2,7 +2,6 @@ const Advice = require('../models/adviceModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
 
-// get all workouts
 const getAdvices = async (req, res) => {
   const user_id = req.user._id
 
@@ -16,7 +15,6 @@ const getAdvices = async (req, res) => {
   res.status(200).json(advices)
 }
 
-// get a single workout
 const getAdvice = async (req, res) => {
   const { id } = req.params
 
@@ -33,8 +31,6 @@ const getAdvice = async (req, res) => {
   res.status(200).json(advice)
 }
 
-
-// create new workout
 const createAdvice = async (req, res) => {
   const { receiver_id, type, content } = req.body
 
@@ -42,9 +38,6 @@ const createAdvice = async (req, res) => {
 
   if (!receiver_id) {
     emptyFields.push('receiver_id')
-  }
-  if (!type) {
-    emptyFields.push('type')
   }
   if (!content) {
     emptyFields.push('content')
@@ -54,16 +47,15 @@ const createAdvice = async (req, res) => {
     return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
   }
 
-  // add doc to db
   try {
     const creator_id = req.user._id
-    const advice = await Advice.create({ receiver_id, type, content, creator_id })
+    const advice = await Advice.create({ receiver_id, content, creator_id })
 
     const notifications = {
       sender_id: creator_id,
-      //content: `You have received a new advice from ${creator_id}`,
-      content: 'You have received a new advice',
+      content: advice.content,
       related_id: advice._id,
+      type: 'advice',
       received_at: new Date(),
       read: false
     }
@@ -79,7 +71,6 @@ const createAdvice = async (req, res) => {
   }
 }
 
-// delete a workout
 const deleteAdvice = async (req, res) => {
   const { id } = req.params
 
@@ -96,7 +87,6 @@ const deleteAdvice = async (req, res) => {
   res.status(200).json(advice)
 }
 
-// update a workout
 const updateAdvice = async (req, res) => {
   const { id } = req.params
 

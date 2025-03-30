@@ -2,15 +2,14 @@ const Challenge = require('../models/challengeModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
 
-// get all workouts
 const getChallenges = async (req, res) => {
   try {
-    const user_id = req.user._id; // Az aktuális felhasználó ID-ja
+    const user_id = req.user._id;
 
     const challenges = await Challenge.find({
       $or: [
-        { creator_id: user_id }, // Ha a felhasználó a kihívás létrehozója
-        { "group_members.user_id": user_id } // Ha benne van a csoporttagok között
+        { creator_id: user_id },
+        { "group_members.user_id": user_id }
       ]
     }).sort({ createdAt: -1 });
 
@@ -20,8 +19,6 @@ const getChallenges = async (req, res) => {
   }
 }
 
-
-// get a single workout
 const getChallenge = async (req, res) => {
   const { id } = req.params
 
@@ -38,8 +35,6 @@ const getChallenge = async (req, res) => {
   res.status(200).json(challenge)
 }
 
-
-// create new workout
 const createChallenge = async (req, res) => {
   const { name, description, valid_until, to_achive, group_members } = req.body
 
@@ -59,7 +54,6 @@ const createChallenge = async (req, res) => {
     return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
   }
 
-  // add doc to db
   try {
     const creator_id = req.user._id
 
@@ -107,7 +101,6 @@ const createChallenge = async (req, res) => {
   }
 }
 
-// delete a workout
 const deleteChallenge = async (req, res) => {
   const { id } = req.params
 
@@ -124,7 +117,6 @@ const deleteChallenge = async (req, res) => {
   res.status(200).json(challenge)
 }
 
-// update a workout
 const updateChallenge = async (req, res) => {
   const { id } = req.params
   const { group_members, to_achive } = req.body;

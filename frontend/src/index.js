@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { ConversationsContextProvider } from './context/ConversationContext'
 import { WorkoutsContextProvider } from './context/WorkoutContext'
 import { AuthContextProvider } from './context/AuthContext'
 import { AdvicesContextProvider } from './context/AdviceContext'
@@ -18,7 +19,9 @@ root.render(
           <ChallengesContextProvider>
             <EventsContextProvider>
               <NotificationsContextProvider>
-                <App />
+                <ConversationsContextProvider>
+                  <App />
+                </ConversationsContextProvider>
               </NotificationsContextProvider>
             </EventsContextProvider>
           </ChallengesContextProvider>

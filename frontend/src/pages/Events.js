@@ -2,7 +2,6 @@ import { useEffect }from 'react'
 import { useEventsContext } from "../hooks/useEventsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
-// components
 import EventDetails from '../components/EventDetails'
 import EventForm from '../components/EventForm'
 

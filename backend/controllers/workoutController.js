@@ -2,7 +2,6 @@ const Workout = require('../models/workoutModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
 
-// get all workouts
 const getWorkouts = async (req, res) => {
   const user_id = req.user._id
 
@@ -11,7 +10,6 @@ const getWorkouts = async (req, res) => {
   res.status(200).json(workouts)
 }
 
-// get a single workout
 const getWorkout = async (req, res) => {
   const { id } = req.params
 
@@ -28,8 +26,6 @@ const getWorkout = async (req, res) => {
   res.status(200).json(workout)
 }
 
-
-// create new workout
 const createWorkout = async (req, res) => {
   const { title, load, reps } = req.body
 
@@ -48,7 +44,6 @@ const createWorkout = async (req, res) => {
     return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
   }
 
-  // add doc to db
   try {
     const user_id = req.user._id
     const workout = await Workout.create({ title, load, reps, user_id })
@@ -58,7 +53,6 @@ const createWorkout = async (req, res) => {
   }
 }
 
-// delete a workout
 const deleteWorkout = async (req, res) => {
   const { id } = req.params
 
@@ -75,7 +69,6 @@ const deleteWorkout = async (req, res) => {
   res.status(200).json(workout)
 }
 
-// update a workout
 const updateWorkout = async (req, res) => {
   const { id } = req.params
 
@@ -113,6 +106,7 @@ const notifyByWorkout = async (req, res) => {
       sender_id: joiningUserId,
       content: `${joiningUser.username} érdeklődik a ${workout.title} edzésed iránt!`,
       related_id: id,
+      type: 'workout',
       received_at: new Date(),
       read: false
     };

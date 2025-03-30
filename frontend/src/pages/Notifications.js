@@ -2,7 +2,6 @@ import { useEffect }from 'react'
 import { useNotificationsContext } from "../hooks/useNotificationContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
-// components
 import NotificationDetails from '../components/NotificationDetails'
 
 const Notifications = () => {

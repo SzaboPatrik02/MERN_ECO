@@ -19,7 +19,6 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
   const [title, setTitle] = useState(workout.title)
   const [load, setLoad] = useState(workout.load)
   const [reps, setReps] = useState(workout.reps)
-  //const [error, setError] = useState(null)
 
   useEffect(() => {
     localStorage.setItem(`notificationSent_${workout._id}`, notificationSent);
@@ -58,7 +57,6 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
     }
   };
 
-  // TÖRLÉS (DELETE)
   const handleDelete = async () => {
     if (!user) return
 
@@ -75,7 +73,6 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
 
   }
 
-  // SZERKESZTÉS (PATCH)
   const handleEdit = async (e) => {
     e.preventDefault()
     if (!user) return

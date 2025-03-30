@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useWorkoutsContext } from "../hooks/useWorkoutsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
-// components
 import ChallengeDetails from '../components/ChallengeDetails'
 import WorkoutDetails from '../components/WorkoutDetails'
 import EventDetails from '../components/EventDetails'

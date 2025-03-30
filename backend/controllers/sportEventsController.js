@@ -2,15 +2,14 @@ const Sportevent = require('../models/sporteventModel')
 const User = require('../models/userModel')
 const mongoose = require('mongoose')
 
-// get all workouts
 const getSportevents = async (req, res) => {
   try {
     const user_id = req.user._id;
 
     const events = await Sportevent.find({
       $or: [
-        { creator_id: user_id }, // Ha a felhasználó a kihívás létrehozója
-        { "group_members.user_id": user_id } // Ha benne van a csoporttagok között
+        { creator_id: user_id },
+        { "group_members.user_id": user_id }
       ]
     }).sort({ createdAt: -1 });
 
@@ -20,7 +19,6 @@ const getSportevents = async (req, res) => {
   }
 }
 
-// get a single workout
 const getSportevent = async (req, res) => {
   const { id } = req.params
 
@@ -37,8 +35,6 @@ const getSportevent = async (req, res) => {
   res.status(200).json(event)
 }
 
-
-// create new workout
 const createSportevent = async (req, res) => {
   const { name, description, event_date, group_members } = req.body
 
@@ -61,7 +57,6 @@ const createSportevent = async (req, res) => {
     return res.status(400).json({ error: 'Please fill in all the fields', emptyFields })
   }
 
-  // add doc to db
   try {
     const creator_id = req.user._id
 
@@ -107,7 +102,6 @@ const createSportevent = async (req, res) => {
   }
 }
 
-// delete a workout
 const deleteSportevent = async (req, res) => {
   const { id } = req.params
 
@@ -124,7 +118,6 @@ const deleteSportevent = async (req, res) => {
   res.status(200).json(event)
 }
 
-// update a workout
 const updateSportevent = async (req, res) => {
   const { id } = req.params
   const { group_members, result } = req.body;

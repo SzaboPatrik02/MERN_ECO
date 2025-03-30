@@ -29,13 +29,20 @@ const NotificationDetails = ({ notification }) => {
     }
   }
   const handleRedirect = () => {
-    navigate('/advices', { state: { receiverId: notification.sender_id } });
+    if (notification.type === 'workout') {
+      navigate('/advices', { state: { receiverId: notification.sender_id } })
+    } else if (notification.type === 'advice') {
+      navigate('/conversations', { state: { receiverId: notification.sender_id } })
+    }
+    //navigate('/advices', { state: { receiverId: notification.sender_id } });
   };
 
   return (
     <div className="workout-details">
       <span className="material-symbols-outlined noti" onClick={handleClick}>delete</span>
-      <span className="material-symbols-outlined noti" onClick={handleRedirect}>reply</span>
+      {(notification.type === 'workout' || notification.type === 'advice') && (
+        <span className="material-symbols-outlined noti" onClick={handleRedirect}>reply</span>
+      )}
       <h4>Sender_id: {notification.sender_id}</h4>
       <p><strong>content: </strong>{notification.content}</p>
       <p><strong>related_id: </strong>{notification.related_id}</p>

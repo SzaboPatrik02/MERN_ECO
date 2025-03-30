@@ -2,7 +2,6 @@ import { useEffect }from 'react'
 import { useAdvicesContext } from "../hooks/useAdvicesContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
-// components
 import AdviceDetails from '../components/AdviceDetails'
 import AdviceForm from '../components/AdviceForm'
 

@@ -2,7 +2,6 @@ import { useEffect }from 'react'
 import { useChallengesContext } from "../hooks/useChallengesContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
-// components
 import ChallengeDetails from '../components/ChallengeDetails'
 import ChallengeForm from '../components/ChallengeForm'
 

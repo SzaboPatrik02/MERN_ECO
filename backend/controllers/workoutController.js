@@ -97,6 +97,10 @@ const notifyByWorkout = async (req, res) => {
       return res.status(404).json({ error: 'A workout nem található.' });
     }
 
+    if (req.user._id.toString() === workout.user_id) {
+      return res.status(400).json({ error: "Saját edzésedre nem küldhetsz értesítést!" });
+    }
+
     const joiningUser = await User.findById(joiningUserId);
     if (!joiningUser) {
       return res.status(404).json({ error: 'A csatlakozó felhasználó nem található.' });

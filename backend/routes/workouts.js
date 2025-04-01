@@ -8,6 +8,7 @@ const {
   notifyByWorkout
 } = require('../controllers/workoutController')
 const requireAuth = require('../middleware/requireAuth')
+const checkCoach = require('../middleware/checkCoach')
 
 const router = express.Router()
 
@@ -21,15 +22,15 @@ router.get('/', getWorkouts)
 router.get('/:id', getWorkout)
 
 // POST a new workout
-router.post('/', createWorkout)
+router.post('/', checkCoach, createWorkout)
 
 router.post('/:id/notify', notifyByWorkout)
 
 // DELETE a workout
-router.delete('/:id', deleteWorkout)
+router.delete('/:id', checkCoach, deleteWorkout)
 
 // UPDATE a workout
-router.patch('/:id', updateWorkout)
+router.patch('/:id', checkCoach, updateWorkout)
 
 
 module.exports = router

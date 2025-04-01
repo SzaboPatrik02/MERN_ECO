@@ -32,7 +32,15 @@ function App() {
             />
             <Route 
               path="/workouts" 
-              element={user ? <Workouts /> : <Navigate to="/login" />} 
+              element={
+                user && user.role === 'coach' ? (
+                  <Workouts />
+                ) : user ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              } 
             />
             <Route 
               path="/notifications" 
@@ -44,7 +52,15 @@ function App() {
             />
             <Route 
               path="/advices" 
-              element={user ? <Advices /> : <Navigate to="/login" />} 
+              element={
+                user && user.role === 'coach' ? (
+                  <Advices />
+                ) : user ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              } 
             />
             <Route 
               path="/challenges" 

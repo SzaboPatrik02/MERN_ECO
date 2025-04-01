@@ -25,7 +25,12 @@ const Navbar = () => {
               <Link to="/sportevents">Events</Link>
               <Link to="/challenges">Challenges</Link>
               <Link to="/advices">Advices</Link>
-              <span>{user.username}</span>
+              <span>
+                {user.username}
+                {user.role === 'coach' && ' 👨‍🏫'}
+                {user.role === 'admin' && ' ⚙️'}
+                {user.role}
+              </span>
               <button onClick={handleClick}>Log out</button>
             </div>
           )}

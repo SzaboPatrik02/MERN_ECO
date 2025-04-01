@@ -27,6 +27,11 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
   const handleNotifyCreator = async () => {
     if (!user) return;
 
+    if (user.user_id === workout.user_id) {
+      alert("Saját edzésedre nem küldhetsz értesítést!");
+      return;
+    }
+
     if (notificationSent) { 
       alert("Már elküldted az értesítést a létrehozónak!");
       return;
@@ -129,7 +134,9 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
               <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
             </div>
           ) : (
-            <span className="add material-symbols-outlined" onClick={handleNotifyCreator}>add</span>
+            user.user_id !== workout.user_id && (
+              <span className="add material-symbols-outlined" onClick={handleNotifyCreator}>add</span>
+            )
           )}
           <h4>{workout.title}</h4>
           <p><strong>Load (kg): </strong>{workout.load}</p>

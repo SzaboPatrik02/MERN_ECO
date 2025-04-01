@@ -4,9 +4,12 @@ const {
   getChallenges,
   getChallenge,
   deleteChallenge,
-  updateChallenge
+  updateChallenge,
+  updateCurrentResult,
+  updateList
 } = require('../controllers/challengeController')
 const requireAuth = require('../middleware/requireAuth')
+const checkAdmin = require('../middleware/checkAdmin')
 
 const router = express.Router()
 
@@ -20,13 +23,17 @@ router.get('/', getChallenges)
 router.get('/:id', getChallenge)
 
 // POST a new workout
-router.post('/', createChallenge)
+router.post('/', checkAdmin, createChallenge)
 
 // DELETE a workout
-router.delete('/:id', deleteChallenge)
+router.delete('/:id', checkAdmin, deleteChallenge)
 
 // UPDATE a workout
-router.patch('/:id', updateChallenge)
+router.patch('/:id', checkAdmin, updateChallenge)
+
+router.patch('/:id/currentresult', updateCurrentResult)
+
+router.patch('/:id/list', updateList)
 
 
 module.exports = router

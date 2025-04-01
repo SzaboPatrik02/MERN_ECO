@@ -4,9 +4,12 @@ const {
   getSportevents,
   getSportevent,
   deleteSportevent,
-  updateSportevent
+  updateSportevent,
+  updateGuess,
+  updateList
 } = require('../controllers/sportEventsController')
 const requireAuth = require('../middleware/requireAuth')
+const checkAdmin = require('../middleware/checkAdmin')
 
 const router = express.Router()
 
@@ -20,13 +23,17 @@ router.get('/', getSportevents)
 router.get('/:id', getSportevent)
 
 // POST a new workout
-router.post('/', createSportevent)
+router.post('/', checkAdmin, createSportevent)
 
 // DELETE a workout
-router.delete('/:id', deleteSportevent)
+router.delete('/:id', checkAdmin, deleteSportevent)
 
 // UPDATE a workout
-router.patch('/:id', updateSportevent)
+router.patch('/:id', checkAdmin, updateSportevent)
+
+router.patch('/:id/guess', updateGuess)
+
+router.patch('/:id/list', updateList)
 
 
 module.exports = router

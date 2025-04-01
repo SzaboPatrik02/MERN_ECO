@@ -158,11 +158,90 @@ const updateChallenge = async (req, res) => {
   res.status(200).json(challenge)
 }
 
+const updateCurrentResult = async (req, res) => {
+  const { id } = req.params;
+  const { current_result } = req.body;
+  const user_id = req.user._id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'No such challenge' });
+  }
+
+  try {
+    // 1. Dokumentum lekérése
+    const challenge = await Challenge.findById(id);
+    if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
+
+    // 2. Tag keresése
+    const member = challenge.group_members.find(m => 
+      m.user_id.toString() === user_id.toString()
+    );
+    if (!member) return res.status(403).json({ error: 'Not a member' });
+
+    // 3. Érték frissítése
+    member.current_result = current_result;
+    await challenge.save();
+
+    // 4. Értesítés küldése
+    if (current_result >= challenge.to_achive) {
+      const notification = {
+        sender_id: user_id,
+        content: `Gratulálok! Teljesítetted a(z) "${challenge.name}" kihívást!`,
+        related_id: id,
+        received_at: new Date(),
+        read: false,
+        type: "challenge_completed"
+      };
+
+      await User.findByIdAndUpdate(
+        user_id,
+        { $push: { notifications: notification } }
+      );
+    }
+
+    res.status(200).json(challenge);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+
+const updateList = async (req, res) => {
+  const { id } = req.params;
+  const { group_members } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ error: 'No such challenge' });
+  }
+
+  try {
+
+    const updateData = { group_members };
+
+    const challenge = await Challenge.findOneAndUpdate(
+      { _id: id },
+      updateData,
+      { new: true }
+    );
+
+    if (!challenge) {
+      return res.status(400).json({ error: 'No such challenge' });
+    }
+
+    res.status(200).json(challenge);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 
 module.exports = {
   getChallenges,
   getChallenge,
   createChallenge,
   deleteChallenge,
-  updateChallenge
+  updateChallenge,
+  updateCurrentResult,
+  updateList
 }

@@ -1,4 +1,4 @@
-import { useEffect }from 'react'
+import { useEffect } from 'react'
 import { useEventsContext } from "../hooks/useEventsContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
@@ -6,23 +6,23 @@ import EventDetails from '../components/EventDetails'
 import EventForm from '../components/EventForm'
 
 const Events = () => {
-  const {sportevents, dispatch} = useEventsContext()
-  const {user} = useAuthContext()
+  const { sportevents, dispatch } = useEventsContext()
+  const { user } = useAuthContext()
 
   useEffect(() => {
     const fetchEvents = async () => {
       const response = await fetch('/api/sportevents', {
-        headers: {'Authorization': `Bearer ${user.token}`},
+        headers: { 'Authorization': `Bearer ${user.token}` },
       })
       const json = await response.json()
 
       if (response.ok) {
-        dispatch({type: 'SET_SPORTEVENTS', payload: json})
+        dispatch({ type: 'SET_SPORTEVENTS', payload: json })
       }
     }
 
     if (user) {
-        fetchEvents()
+      fetchEvents()
     }
   }, [dispatch, user, sportevents])
 
@@ -33,7 +33,9 @@ const Events = () => {
           <EventDetails key={event._id} event={event} />
         ))}
       </div>
-      <EventForm />
+      {(user.role === 'admin') && (
+        <EventForm />
+      )}
     </div>
   )
 }

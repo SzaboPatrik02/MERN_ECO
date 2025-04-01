@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useChallengesContext } from '../hooks/useChallengesContext'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { useNavigate } from 'react-router-dom';
 
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
@@ -9,6 +10,7 @@ import moment from 'moment'
 const ChallengeDetails = ({ challenge, isMainPage }) => {
   const { dispatch } = useChallengesContext()
   const { user } = useAuthContext()
+  const navigate = useNavigate()
 
   const [editedChallenge, setEditedChallenge] = useState(null);
 
@@ -22,6 +24,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   const [current_result, setCurrentResult] = useState(challenge.group_members.current_result)
   const [creator_id, setCreator_id] = useState(challenge.creator_id)
   const [users, setUsers] = useState([]);
+
   const [userCurrentResult, setUserCurrentResult] = useState(
     group_members.find(m => m.user_id === user.user_id)?.current_result || ""
   );
@@ -58,6 +61,46 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
     fetchUsers();
   }, [user]);
 
+  const handleMemberClick = (memberId) => {
+    navigate('/conversations', {
+      state: {
+        receiverId: memberId,
+        presetMessage: `Szia! Az "${challenge.name}" challengeről szeretnék beszélni.`
+      }
+    });
+  };
+
+  const handleTakeAway = async () => {
+    if (!user) return;
+
+    try {
+      const updatedGroupMembers = group_members.filter(
+        member => member.user_id !== user.user_id
+      );
+
+      const response = await fetch(`/api/challenges/${challenge._id}/list`, {
+        method: 'PATCH',
+        body: JSON.stringify({ group_members: updatedGroupMembers }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+
+      const json = await response.json();
+
+      if (response.ok) {
+        setGroup_members(updatedGroupMembers);
+        dispatch({ type: 'UPDATE_CHALLENGE', payload: json });
+        challenge.group_members = updatedGroupMembers;
+      } else {
+        alert(json.error);
+      }
+    } catch (error) {
+      console.error("Error removing user from challenge:", error);
+    }
+  };
+
   const handleCurrentResultChange = (e) => {
     setIsEditing(true);
     setIsEditingCurrentResult(true);
@@ -79,7 +122,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
     const updatedGroupMembers = [...group_members, newMember];
 
     try {
-      const response = await fetch(`/api/challenges/${challenge._id}`, {
+      const response = await fetch(`/api/challenges/${challenge._id}/list`, {
         method: 'PATCH',
         body: JSON.stringify({ group_members: updatedGroupMembers }),
         headers: {
@@ -128,40 +171,49 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
     e.preventDefault()
     if (!user) return
 
-    const updatedMembers = group_members.map(member => {
-      if (member.user_id === user.user_id) {
-        return { ...member, current_result: userCurrentResult };
-      }
-      return member;
-    });
-
-    setIsEditing(true);
-    setIsEditingCurrentResult(false);
-
-    const updatedChallenge = { name, description, valid_until, to_achive, group_members: updatedMembers, creator_id }
-
-    console.log("Frissített adatok küldés előtt:", updatedChallenge);
-
     try {
-      const response = await fetch(`/api/challenges/${challenge._id}`, {
-        method: 'PATCH',
-        body: JSON.stringify(updatedChallenge),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.token}`
-        }
-      });
+      let response;
 
-      const json = await response.json();
-      console.log("Szerver válasza:", json);
+      if (isEditingCurrentResult) {
+        response = await fetch(`/api/challenges/${challenge._id}/currentresult`, {
+          method: 'PATCH',
+          body: JSON.stringify({ current_result: userCurrentResult }),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+          }
+        })
+      } else {
+        const updatedMembers = group_members.map(member => {
+          if (member.user_id === user.user_id) {
+            return { ...member, current_result: userCurrentResult };
+          }
+          return member;
+        });
+
+        const updatedChallenge = { name, description, valid_until, to_achive, group_members: updatedMembers, creator_id }
+
+        response = await fetch(`/api/challenges/${challenge._id}`, {
+          method: 'PATCH',
+          body: JSON.stringify(updatedChallenge),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+          }
+        })
+      }
+
+      const json = await response.json()
 
       if (response.ok) {
-        setIsEditing(false);
-        setGroup_members(updatedMembers);
-        dispatch({ type: 'UPDATE_CHALLENGE', payload: json });
+        setIsEditing(false)
+        setIsEditingCurrentResult(false)
+        dispatch({ type: 'UPDATE_CHALLENGE', payload: json })
+      } else {
+        throw new Error(json.error || 'Failed to update')
       }
     } catch (error) {
-      console.error("Hiba történt a módosítás során:", error);
+      console.error("Hiba történt a módosítás során:", error)
     }
   }
 
@@ -227,9 +279,18 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
         < div >
           {!isMainPage ? (
             <div>
-              <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
-              <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+              {(user.role === 'admin') && (
+                <div>
+                  <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
+                  <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
+                </div>
+              )}
               <span className="edit material-symbols-outlined" onClick={handleCurrentResultChange}>add</span>
+              {group_members.some(m => m.user_id === user?.user_id) && (
+                <button className="take-away-btn" onClick={handleTakeAway}>
+                  Take Away
+                </button>
+              )}
             </div>
           ) : (
             <span className="add material-symbols-outlined" onClick={handleJoin}>add</span>
@@ -245,7 +306,12 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
               const userInfo = users.find(u => u._id === member.user_id);
               return (
                 <li key={index}>
-                  {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
+                  <span
+                    className="member-name"
+                    onClick={() => handleMemberClick(member.user_id)}
+                  >
+                    {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
+                  </span>
                   <p>{member.current_result}</p>
                   {isWinner(challenge.to_achive, member.current_result) && <p>WINNER!</p>}
                 </li>);

@@ -1,4 +1,4 @@
-import { useEffect }from 'react'
+import { useEffect } from 'react'
 import { useChallengesContext } from "../hooks/useChallengesContext"
 import { useAuthContext } from "../hooks/useAuthContext"
 
@@ -6,23 +6,23 @@ import ChallengeDetails from '../components/ChallengeDetails'
 import ChallengeForm from '../components/ChallengeForm'
 
 const Challenges = () => {
-  const {challenges, dispatch} = useChallengesContext()
-  const {user} = useAuthContext()
+  const { challenges, dispatch } = useChallengesContext()
+  const { user } = useAuthContext()
 
   useEffect(() => {
     const fetchChallenges = async () => {
       const response = await fetch('/api/challenges', {
-        headers: {'Authorization': `Bearer ${user.token}`},
+        headers: { 'Authorization': `Bearer ${user.token}` },
       })
       const json = await response.json()
 
       if (response.ok) {
-        dispatch({type: 'SET_CHALLENGES', payload: json})
+        dispatch({ type: 'SET_CHALLENGES', payload: json })
       }
     }
 
     if (user) {
-        fetchChallenges()
+      fetchChallenges()
     }
   }, [dispatch, user, challenges])
 
@@ -33,7 +33,9 @@ const Challenges = () => {
           <ChallengeDetails key={challenge._id} challenge={challenge} />
         ))}
       </div>
-      <ChallengeForm />
+      {(user.role === 'admin') && (
+        <ChallengeForm />
+      )}
     </div>
   )
 }

@@ -4,7 +4,9 @@ const {
     getConversation,
     createConversation,
     deleteConversation,
-    updateConversation
+    updateConversation,
+    getUnreadMessages,
+    markAsRead,
 } = require('../controllers/conversationController')
 const requireAuth = require('../middleware/requireAuth')
 
@@ -14,6 +16,8 @@ router.use(requireAuth)
 
 router.get('/', getConversations)
 
+router.get('/unread', getUnreadMessages)
+
 router.get('/:id', getConversation)
 
 router.post('/', createConversation)
@@ -21,5 +25,7 @@ router.post('/', createConversation)
 router.delete('/:id', deleteConversation)
 
 router.patch('/:id', updateConversation)
+
+router.patch('/:id/read', markAsRead)
 
 module.exports = router

@@ -22,6 +22,25 @@ export const conversationsReducer = (state, action) => {
                     w._id === action.payload._id ? action.payload : w
                 )
             }
+            case 'UPDATE_CONVERSATION':
+                return {
+                    ...state,
+                    conversations: (state.conversations || []).map(conversation => 
+                        conversation._id === action.payload._id 
+                            ? {
+                                ...conversation,
+                                ...action.payload,
+                                
+                                messages: action.payload.messages !== undefined 
+                                    ? action.payload.messages 
+                                    : conversation.messages,
+                                
+                                updatedAt: action.payload.updatedAt || conversation.updatedAt,
+                                createdAt: action.payload.createdAt || conversation.createdAt
+                            } 
+                            : conversation
+                    )
+                }
         default:
             return state
     }

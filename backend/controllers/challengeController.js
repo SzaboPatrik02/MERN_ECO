@@ -168,21 +168,18 @@ const updateCurrentResult = async (req, res) => {
   }
 
   try {
-    // 1. Dokumentum lekérése
+    
     const challenge = await Challenge.findById(id);
     if (!challenge) return res.status(404).json({ error: 'Challenge not found' });
 
-    // 2. Tag keresése
     const member = challenge.group_members.find(m => 
       m.user_id.toString() === user_id.toString()
     );
     if (!member) return res.status(403).json({ error: 'Not a member' });
 
-    // 3. Érték frissítése
     member.current_result = current_result;
     await challenge.save();
 
-    // 4. Értesítés küldése
     if (current_result >= challenge.to_achive) {
       const notification = {
         sender_id: user_id,

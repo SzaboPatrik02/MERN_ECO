@@ -3,24 +3,19 @@ import { useConversationsContext } from "../hooks/useConversationsContext"
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useLocation } from "react-router-dom";
 
-const ConversationForm = () => {
+const ConversationForm = ({ isRedirect: propIsRedirect }) => {
   const { dispatch } = useConversationsContext()
   const { user } = useAuthContext()
 
   const location = useLocation()
-  //const receiverId = location.state?.receiverId
+  
+  const isRedirect = propIsRedirect || location.state?.isRedirect
 
   const [receiver_id, setReceiverId] = useState(location.state?.receiverId || '');
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState(location.state?.presetMessage || '');
   const [creator_id, setCreatorId] = useState('')
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
-
-  /*useEffect(() => {
-    if (receiverId) {
-      setReceiverId(receiverId);
-    }
-  }, [receiverId]);*/
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -65,13 +60,17 @@ const ConversationForm = () => {
     <form className="create" onSubmit={handleSubmit}>
       <h3>Add a New Message</h3>
 
-      <label>Receiver id:</label>
-      <input
-        type="text"
-        onChange={(e) => setReceiverId(e.target.value)}
-        value={receiver_id}
-      //className={emptyFields.includes('receiver_id') ? 'error' : ''}
-      />
+      {!isRedirect && (
+        <div>
+          <label>Receiver id:</label>
+          <input
+            type="text"
+            onChange={(e) => setReceiverId(e.target.value)}
+            value={receiver_id}
+            className={emptyFields.includes('receiver_id') ? 'error' : ''}
+          />
+        </div>
+      )}
 
       <label>Content:</label>
       <input

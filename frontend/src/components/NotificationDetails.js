@@ -9,7 +9,22 @@ const NotificationDetails = ({ notification }) => {
   const { dispatch } = useNotificationsContext()
   const { user } = useAuthContext()
   const navigate = useNavigate();
-  
+
+  const handleMarkAsRead = async () => {
+    if (!user) return
+
+    const response = await fetch(`/api/user/notifications/${notification._id}/read`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${user.token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (response.ok) {
+      dispatch({ type: 'MARK_AS_READ', payload: notification._id })
+    }
+  }
 
   const handleClick = async () => {
     if (!user) {
@@ -30,15 +45,32 @@ const NotificationDetails = ({ notification }) => {
   }
   const handleRedirect = () => {
     if (notification.type === 'workout') {
-      navigate('/advices', { state: { receiverId: notification.sender_id } })
+      navigate('/advices', {
+        state: {
+          receiverId: notification.sender_id,
+          isRedirect: true
+        }
+      })
     } else if (notification.type === 'advice') {
-      navigate('/conversations', { state: { receiverId: notification.sender_id } })
+      navigate('/conversations', {
+        state: {
+          receiverId: notification.sender_id,
+          isRedirect: true
+        }
+      })
     }
-    //navigate('/advices', { state: { receiverId: notification.sender_id } });
+    if (!notification.read) {
+      handleMarkAsRead()
+    }
   };
 
   return (
     <div className="workout-details">
+      {!notification.read && (
+        <button onClick={handleMarkAsRead} className="mark-as-read-btn">
+          Mark as Read
+        </button>
+      )}
       <span className="material-symbols-outlined noti" onClick={handleClick}>delete</span>
       {(notification.type === 'workout' || notification.type === 'advice') && (
         <span className="material-symbols-outlined noti" onClick={handleRedirect}>reply</span>
@@ -49,6 +81,7 @@ const NotificationDetails = ({ notification }) => {
       <p><strong>read: </strong>{notification.read ? 'Yes' : 'No'}</p>
       <p><strong>received_at: </strong>{notification.received_at}</p>
       <p>received_at:{formatDistanceToNow(new Date(notification.received_at), { addSuffix: true })}</p>
+      {!notification.read && <span className="unread-badge">NEW</span>}
     </div>
   )
 }

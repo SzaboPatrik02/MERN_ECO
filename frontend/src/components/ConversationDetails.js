@@ -45,6 +45,22 @@ const ConversationDetails = ({ conversation }) => {
     fetchUsers();
   }, [user]);
 
+  const handleMarkAsRead = async () => {
+    if (!user) return
+
+    const response = await fetch(`/api/conversations/${conversation._id}/read`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${user.token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (response.ok) {
+      dispatch({ type: 'MARK_AS_READ', payload: conversation._id })
+    }
+  }
+
   const handleDelete = async () => {
     if (!user) {
       return
@@ -113,19 +129,22 @@ const ConversationDetails = ({ conversation }) => {
       <div className="conversation-header">
         <h3 className="conversation-partner">{otherParticipant?.username || 'Ismeretlen'}</h3>
         <div className="conversation-actions">
-          <button className="toggle-view-btn" onClick={() => setShowAllMessages(!showAllMessages)}>
+          <button className="toggle-view-btn" onClick={() => {
+            setShowAllMessages(!showAllMessages);
+            handleMarkAsRead();
+          }}>
             {showAllMessages ? 'Vissza' : 'Teljes beszélgetés'}
           </button>
           <button className="delete-btn" onClick={handleDelete}>Törlés</button>
         </div>
       </div>
-  
+
       <div className="messages-container">
         {showAllMessages ? (
           <div className="all-messages">
             {conversation.messages.map((message, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`message-row ${message.creator_id === user._id ? 'sent' : 'received'}`}
               >
                 <div className="message-content">
@@ -145,24 +164,24 @@ const ConversationDetails = ({ conversation }) => {
         ) : (
           <div className="last-message">
             {conversation.messages.length > 0 && (
-              <div className={`message-row ${conversation.messages[conversation.messages.length-1].creator_id === user._id ? 'sent' : 'received'}`}>
+              <div className={`message-row ${conversation.messages[conversation.messages.length - 1].creator_id === user._id ? 'sent' : 'received'}`}>
                 <div className="message-content">
                   <div className="message-meta">
                     <span className="message-sender">
-                      {users.find(u => u._id === conversation.messages[conversation.messages.length-1].creator_id)?.username || 'Ismeretlen'}
+                      {users.find(u => u._id === conversation.messages[conversation.messages.length - 1].creator_id)?.username || 'Ismeretlen'}
                     </span>
                     <span className="message-time">
-                      {moment(conversation.messages[conversation.messages.length-1].timestamp).format('HH:mm')}
+                      {moment(conversation.messages[conversation.messages.length - 1].timestamp).format('HH:mm')}
                     </span>
                   </div>
-                  <p className="message-text">{conversation.messages[conversation.messages.length-1].content}</p>
+                  <p className="message-text">{conversation.messages[conversation.messages.length - 1].content}</p>
                 </div>
               </div>
             )}
           </div>
         )}
       </div>
-  
+
       <form onSubmit={handleReply} className="reply-form">
         <input
           type="text"

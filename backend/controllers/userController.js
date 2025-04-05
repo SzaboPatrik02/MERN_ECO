@@ -7,7 +7,7 @@ const createToken = (_id) => {
 
 const getUsers = async (req, res) => {
 
-  const users = await User.find().sort({createdAt: -1})
+  const users = await User.find().sort({ createdAt: -1 })
 
   res.status(200).json(users)
 }
@@ -55,6 +55,20 @@ const getNotifications = async (req, res) => {
   }
 };
 
+const getUnreadNotifications = async (req, res) => {
+  const user = await User.findById(req.user._id)
+  const unreadCount = user.notifications.filter(n => !n.read).length
+  res.json({ count: unreadCount })
+}
+
+const markAsRead = async (req, res) => {
+  await User.updateOne(
+    { _id: req.user._id, 'notifications._id': req.params.id },
+    { $set: { 'notifications.$.read': true } }
+  )
+  res.sendStatus(200)
+}
+
 const deleteNotification = async (req, res) => {
   try {
     if (!req.user) {
@@ -75,4 +89,4 @@ const deleteNotification = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, signupUser, loginUser, getNotifications, deleteNotification }
+module.exports = { getUsers, signupUser, loginUser, getNotifications, deleteNotification, getUnreadNotifications, markAsRead }

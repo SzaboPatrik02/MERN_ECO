@@ -5,7 +5,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 
-const AdviceDetails = ({ advice, isMainPage }) => {
+const AdviceDetails = ({ advice }) => {
   const { dispatch } = useAdvicesContext()
   const { user } = useAuthContext()
 
@@ -85,14 +85,10 @@ const AdviceDetails = ({ advice, isMainPage }) => {
         </form>
       ) : (
         <div>
-          {!isMainPage ? (
-            <div>
+          <div>
             <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
             <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
-            </div>
-          ) : (
-            <span className="add material-symbols-outlined" onClick>add</span>
-          )}
+          </div>
           <h4>{advice.receiver_id}</h4>
           <p><strong>Type: </strong>{advice.type}</p>
           <p><strong>Content: </strong>{advice.content}</p>

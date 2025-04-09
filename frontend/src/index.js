@@ -9,24 +9,27 @@ import { AdvicesContextProvider } from './context/AdviceContext'
 import { ChallengesContextProvider } from './context/ChallengeContext'
 import { EventsContextProvider } from './context/EventContext'
 import { NotificationsContextProvider } from './context/NotificationContext'
+import { UsersContextProvider } from './context/UserContext'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthContextProvider>
-      <WorkoutsContextProvider>
-        <AdvicesContextProvider>
-          <ChallengesContextProvider>
-            <EventsContextProvider>
-              <NotificationsContextProvider>
-                <ConversationsContextProvider>
-                  <App />
-                </ConversationsContextProvider>
-              </NotificationsContextProvider>
-            </EventsContextProvider>
-          </ChallengesContextProvider>
-        </AdvicesContextProvider>
-      </WorkoutsContextProvider>
+      <UsersContextProvider>
+        <WorkoutsContextProvider>
+          <AdvicesContextProvider>
+            <ChallengesContextProvider>
+              <EventsContextProvider>
+                <NotificationsContextProvider>
+                  <ConversationsContextProvider>
+                    <App />
+                  </ConversationsContextProvider>
+                </NotificationsContextProvider>
+              </EventsContextProvider>
+            </ChallengesContextProvider>
+          </AdvicesContextProvider>
+        </WorkoutsContextProvider>
+      </UsersContextProvider>
     </AuthContextProvider>
   </React.StrictMode>
 );

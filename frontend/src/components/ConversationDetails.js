@@ -1,18 +1,16 @@
 import { useState, useEffect } from 'react'
 import { useConversationsContext } from '../hooks/useConversationsContext'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { useNavigate } from 'react-router-dom';
 
-// date fns
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 import moment from 'moment'
 
 const ConversationDetails = ({ conversation }) => {
   const { dispatch } = useConversationsContext()
   const { user } = useAuthContext()
+  const navigate = useNavigate()
 
   const [replyContent, setReplyContent] = useState('');
-  const [replyReceiverId, setReplyReceiverId] = useState('');
-  const [replyingToMessage, setReplyingToMessage] = useState(null);
 
   const [users, setUsers] = useState([]);
   const [showAllMessages, setShowAllMessages] = useState(false);
@@ -44,6 +42,10 @@ const ConversationDetails = ({ conversation }) => {
 
     fetchUsers();
   }, [user]);
+
+  const handleMemberClick = (memberId) => {
+    navigate(`/user/${memberId}`);
+  }
 
   const handleMarkAsRead = async () => {
     if (!user) return
@@ -91,10 +93,6 @@ const ConversationDetails = ({ conversation }) => {
       creator_id: user.user_id,
     };
 
-    //const updatedMessages = [...conversation.messages, newMessage];
-
-    //console.log('Updated messages:', updatedMessages); // Ellenőrizzük a messages tömböt
-
     const response = await fetch('/api/conversations/' + conversation._id, {
       method: 'PATCH',
       headers: {
@@ -119,15 +117,14 @@ const ConversationDetails = ({ conversation }) => {
   const otherParticipantId = conversation.participants.find(id => id !== user.user_id)
   const otherParticipant = users.find(u => u._id === otherParticipantId)
 
-  /*const handleReplyClick = (message) => {
-    setReplyingToMessage(message);
-    setReplyContent('');
-  };*/
-
   return (
     <div className="conversation-item">
       <div className="conversation-header">
-        <h3 className="conversation-partner">{otherParticipant?.username || 'Ismeretlen'}</h3>
+        <h3
+          className="conversation-partner"
+          onClick={() => otherParticipant && handleMemberClick(otherParticipant._id)}
+        >
+          {otherParticipant?.username || 'Ismeretlen'}</h3>
         <div className="conversation-actions">
           <button className="toggle-view-btn" onClick={() => {
             setShowAllMessages(!showAllMessages);

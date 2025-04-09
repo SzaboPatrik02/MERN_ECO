@@ -62,13 +62,8 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   }, [user]);
 
   const handleMemberClick = (memberId) => {
-    navigate('/conversations', {
-      state: {
-        receiverId: memberId,
-        presetMessage: `Szia! Az "${challenge.name}" challengeről szeretnék beszélni.`
-      }
-    });
-  };
+    navigate(`/user/${memberId}`);
+  }
 
   const handleTakeAway = async () => {
     if (!user) return;
@@ -306,13 +301,13 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
               const userInfo = users.find(u => u._id === member.user_id);
               return (
                 <li key={index}>
-                  <span
+                  <p
                     className="member-name"
                     onClick={() => handleMemberClick(member.user_id)}
                   >
-                    {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
-                  </span>
-                  <p>{member.current_result}</p>
+                    <b>name: </b>{userInfo ? userInfo.username : "Ismeretlen felhasználó"}
+                  </p>
+                  <p><i>result:</i> {member.current_result}</p>
                   {isWinner(challenge.to_achive, member.current_result) && <p>WINNER!</p>}
                 </li>);
             })}

@@ -61,13 +61,16 @@ const EventDetails = ({ event, isMainPage }) => {
   }, [user]);
 
   const handleMemberClick = (memberId) => {
+    navigate(`/user/${memberId}`);
+  }
+  /*const handleMemberClick = (memberId) => {
     navigate('/conversations', {
       state: {
         receiverId: memberId,
         presetMessage: `Szia! Az "${event.name}" eseményről szeretnék beszélni.`
       }
     });
-  };
+  };*/
 
   const handleTakeAway = async () => {
     if (!user) return;
@@ -309,14 +312,14 @@ const EventDetails = ({ event, isMainPage }) => {
               const userInfo = users.find(u => u._id === member.user_id);
               return (
                 <li key={index}>
-                  <span
+                  <p
                     className="member-name"
                     onClick={() => handleMemberClick(member.user_id)}
                   >
-                    {userInfo ? userInfo.username : "Ismeretlen felhasználó"}
-                  </span>
-                  <p>{member.guess}</p>
-                  {isWinner(event.result, member.guess) && <p>WINNER!</p>}
+                    <b>name: </b>{userInfo ? userInfo.username : "Ismeretlen felhasználó"}
+                  </p>
+                  <p><i>guess: </i>{member.guess}</p>
+                  {isWinner(event.result, member.guess) && <p className='winner-badge'>WINNER!</p>}
                 </li>);
             })}
           </ul>

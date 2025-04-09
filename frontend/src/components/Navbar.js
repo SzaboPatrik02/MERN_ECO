@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useLogout } from '../hooks/useLogout'
 import { useAuthContext } from '../hooks/useAuthContext'
-import { useNotificationsContext } from '../hooks/useNotificationContext'
 
-import { FaComments, FaBell, FaDumbbell, FaCalendarAlt, FaTrophy, FaLightbulb } from 'react-icons/fa';
+import { FaComments, FaBell } from 'react-icons/fa';
 import { useEffect, useState } from 'react'
 
 const Navbar = () => {
@@ -34,16 +33,17 @@ const Navbar = () => {
   useEffect(() => {
     const fetchUnreadMessagesCount = async () => {
       if (user) {
-          const response = await fetch('/api/conversations/unread', {
-            headers: {
-              'Authorization': `Bearer ${user.token}`
-            }
-          });
-          const data = await response.json();
-          setUnreadMessagesCount(data.count);
+        const response = await fetch('/api/conversations/unread', {
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
+        });
+        const data = await response.json();
+        setUnreadMessagesCount(data.count);
       }
     };
-  
+    console.log(user)
+
     fetchUnreadMessagesCount();
     const interval = setInterval(fetchUnreadMessagesCount, 2000);
     return () => clearInterval(interval);
@@ -82,6 +82,19 @@ const Navbar = () => {
                   </span>
                 )}
               </Link>
+              <Link to={`/user/${user.user_id}`}>
+              <img
+                src={user.profile_picture}
+                alt="Profile"
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '50%',
+                  marginLeft: '8px',
+                  objectFit: 'cover'
+                }}
+              />
+              </Link>
               <span>
                 {user.username}
                 {user.role === 'coach' && ' 👨‍🏫'}
@@ -89,6 +102,7 @@ const Navbar = () => {
                 {user.role === 'user' && ' '}
                 {user.role}
               </span>
+              
               <button onClick={handleClick}>Log out</button>
             </div>
           )}

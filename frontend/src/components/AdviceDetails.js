@@ -17,6 +17,36 @@ const AdviceDetails = ({ advice }) => {
   const [content, setContent] = useState(advice.content)
   const [creator_id, setCreator_id] = useState(advice.creator_id)
 
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!user) return;
+
+      try {
+        const response = await fetch('/api/user', {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        console.log("Felhasználók betöltve:", data);
+
+        if (response.ok) {
+          setUsers(data);
+        } else {
+          console.error("Hiba a felhasználók lekérdezésekor:", data.error);
+        }
+      } catch (error) {
+        console.error('Hálózati hiba:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [user]);
+
   const handleDelete = async () => {
     if (!user) {
       return
@@ -89,8 +119,9 @@ const AdviceDetails = ({ advice }) => {
             <span className="del material-symbols-outlined" onClick={handleDelete}>delete</span>
             <span className="upd material-symbols-outlined" onClick={() => setIsEditing(true)}>update</span>
           </div>
-          <h4>{advice.receiver_id}</h4>
-          <p><strong>Type: </strong>{advice.type}</p>
+          <h4>
+            <strong>Címzett:</strong> {users.find(u => u._id === advice.receiver_id)?.username || "Ismeretlen felhasználó"}
+          </h4>
           <p><strong>Content: </strong>{advice.content}</p>
           <p><strong>Creator_id: </strong>{advice.creator_id}</p>
           <p>{formatDistanceToNow(new Date(advice.createdAt), { addSuffix: true })}</p>

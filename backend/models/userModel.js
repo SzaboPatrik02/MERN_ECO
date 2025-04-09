@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require('bcrypt')
-const validator = require('validator')
+const validator = require('validator');
 
 const Schema = mongoose.Schema
 
@@ -36,13 +36,37 @@ const userSchema = new Schema({
       received_at: { type: Date, default: Date.now },
       read: { type: Boolean, default: false }
     }
-  ]
+  ],
+  profile_picture: {
+    type: String,
+    default: '/jpg.jpg'
+  },
+  about: {
+    introduction: {
+      type: String,
+      required: false,
+    },
+    fav_sport: {
+      type: String,
+      required: false,
+    }
+  },
+  activity: {
+    last_completed_challenge: {
+      type: String,
+      required: false,
+    },
+    upcoming_event: {
+      type: String,
+      required: false,
+    }
+  }
 }, { timestamps: true })
 
-userSchema.statics.signup = async function(email, username, password) {
+userSchema.statics.signup = async function (email, username, password) {
 
   console.log('Signup request data:', { email, username, password });
-  
+
   if (!email || !username || !password) {
     throw Error('All fields must be filled')
   }
@@ -71,7 +95,7 @@ userSchema.statics.signup = async function(email, username, password) {
   return user
 }
 
-userSchema.statics.login = async function(email, password) {
+userSchema.statics.login = async function (email, password) {
 
   if (!email || !password) {
     throw Error('All fields must be filled')

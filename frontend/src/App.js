@@ -3,6 +3,7 @@ import { useAuthContext } from './hooks/useAuthContext'
 
 // pages & components
 import Home from './pages/Home'
+import User from './pages/User'
 import Conversations from './pages/Conversations'
 import Workouts from './pages/Workouts'
 import Notifications from './pages/Notifications'
@@ -25,6 +26,10 @@ function App() {
             <Route 
               path="/" 
               element={user ? <Home /> : <Navigate to="/login" />} 
+            />
+            <Route 
+              path="/user/:userId" 
+              element={user ? <User /> : <Navigate to="/login" />} 
             />
             <Route 
               path="/conversations" 

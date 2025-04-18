@@ -219,6 +219,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
       setValid_until(editedChallenge.valid_until);
       setGroup_members(editedChallenge.group_members);
       setTo_achive(editedChallenge.to_achive);
+      setCurrentResult(editedChallenge.current_result);
     }
   }, [editedChallenge])
 
@@ -227,7 +228,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
   };
 
   return (
-    <div className="workout-details">
+    <div className="details">
       {isEditing ? (
         <form onSubmit={handleEdit}>
           <h3>Edit Challenge</h3>
@@ -255,7 +256,6 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
                 type="text"
                 value={userCurrentResult}
                 onChange={(e) => setUserCurrentResult(e.target.value)}
-                required
               />
             </div>
           )}
@@ -290,10 +290,11 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
           ) : (
             <span className="add material-symbols-outlined" onClick={handleJoin}>add</span>
           )}
+          <p className='type type-challenge'>{challenge.type}</p>
           <h4>{challenge.name}</h4>
           <p><strong>Description: </strong>{challenge.description}</p>
           <p><strong>Valid until: </strong>{moment(challenge.valid_until).format('YYYY-MM-DD HH:mm')}</p>
-          <p><strong>To achive: </strong>{challenge.to_achive}</p>
+          <p className='to-achive'><strong>To achive: </strong>{challenge.to_achive}</p>
 
           <p><strong>Group Members:</strong></p>
           <ul>
@@ -312,6 +313,7 @@ const ChallengeDetails = ({ challenge, isMainPage }) => {
                 </li>);
             })}
           </ul>
+          
           <p>{formatDistanceToNow(new Date(challenge.createdAt), { addSuffix: true })}</p>
         </div >
       )}

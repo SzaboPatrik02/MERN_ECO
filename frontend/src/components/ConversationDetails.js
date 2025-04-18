@@ -119,7 +119,7 @@ const ConversationDetails = ({ conversation }) => {
 
   return (
     <div className="conversation-item">
-      <div className="conversation-header">
+      
         <h3
           className="conversation-partner"
           onClick={() => otherParticipant && handleMemberClick(otherParticipant._id)}
@@ -134,15 +134,16 @@ const ConversationDetails = ({ conversation }) => {
           </button>
           <button className="delete-btn" onClick={handleDelete}>Törlés</button>
         </div>
-      </div>
+      
 
       <div className="messages-container">
         {showAllMessages ? (
           <div className="all-messages">
             {conversation.messages.map((message, index) => (
+              
               <div
                 key={index}
-                className={`message-row ${message.creator_id === user._id ? 'sent' : 'received'}`}
+                className={`message-row ${message.creator_id?.toString() === user._id?.toString() ? 'sent' : 'received'}`}
               >
                 <div className="message-content">
                   <div className="message-meta">

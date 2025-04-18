@@ -26,8 +26,8 @@ const Notifications = () => {
   }, [dispatch, user, notifications])
 
   return (
-    <div className="home">
-      <div className="workouts">
+    <div className="page">
+      <div>
         {notifications && notifications.map((notification) => (
           <NotificationDetails key={notification._id} notification={notification} />
         ))}

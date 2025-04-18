@@ -10,6 +10,7 @@ const Navbar = () => {
   const { user } = useAuthContext()
   const [unreadNotiCount, setUnreadNotiCount] = useState(0)
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0)
+  const [profile_picture, setProfile_picture] = useState(user?.profile_picture)
 
   useEffect(() => {
     const fetchUnreadNotiCount = async () => {
@@ -20,6 +21,7 @@ const Navbar = () => {
           }
         })
         const data = await response.json()
+        
         setUnreadNotiCount(data.count)
       }
     }
@@ -48,6 +50,10 @@ const Navbar = () => {
     const interval = setInterval(fetchUnreadMessagesCount, 2000);
     return () => clearInterval(interval);
   }, [user]);
+
+  useEffect(() => {
+    setProfile_picture(user?.profile_picture);
+  }, [user?.profile_picture]);
 
   const handleClick = () => {
     logout()
@@ -84,7 +90,7 @@ const Navbar = () => {
               </Link>
               <Link to={`/user/${user.user_id}`}>
               <img
-                src={user.profile_picture}
+                src={profile_picture}
                 alt="Profile"
                 style={{
                   width: '28px',

@@ -157,14 +157,23 @@ const getNotifications = async (req, res) => {
 };
 
 const getUnreadNotifications = async (req, res) => {
-  const user = await User.findById(req.user._id);
+  
+  try {
+    if (!req.user) {
+      return res.json({ count: 0, error: "Unauthorized" });
+    }
+    const user = await User.findById(req.user._id);
+  
+    if (!user) {
+      return res.status(404).json({ count: 0, error: "User not found" });
+    }
+  
+    const unreadCount = user.notifications.filter(n => !n.read).length;
+    res.json({ count: unreadCount });
 
-  if (!user) {
-    return res.json({ count: 0 });
+  } catch (error) {
+    res.status(500).json({ count: 0, error: error.message });
   }
-
-  const unreadCount = user.notifications.filter(n => !n.read).length;
-  res.json({ count: unreadCount });
 };
 
 const markAsRead = async (req, res) => {

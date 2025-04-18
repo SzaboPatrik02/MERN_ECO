@@ -234,7 +234,7 @@ const EventDetails = ({ event, isMainPage }) => {
   };
 
   return (
-    <div className="workout-details">
+    <div className="details">
       {isEditing ? (
         <form onSubmit={handleEdit}>
           <h3>Edit Event</h3>
@@ -268,7 +268,7 @@ const EventDetails = ({ event, isMainPage }) => {
                 placeholder="X - Y"
               />
               <label>Result:</label>
-              <input type="text" value={result} onChange={(e) => setResult(e.target.value)} placeholder="X - Y" />
+              <input type="text" className='edit-result' value={result} onChange={(e) => setResult(e.target.value)} placeholder="X - Y" />
             </div>
           )}
 
@@ -302,6 +302,7 @@ const EventDetails = ({ event, isMainPage }) => {
           ) : (
             <span className="add material-symbols-outlined" onClick={handleJoin}>add</span>
           )}
+          <p className='type type-event'>{event.type}</p>
           <h4>{event.name}</h4>
           <p><strong>Description: </strong>{event.description}</p>
           <p><strong>Event date: </strong>{moment(event.event_date).format('YYYY-MM-DD HH:mm')}</p>
@@ -323,7 +324,8 @@ const EventDetails = ({ event, isMainPage }) => {
                 </li>);
             })}
           </ul>
-          <p><strong>Result: </strong>{event.result}</p>
+          <p className='result'><strong>Result: </strong>{event.result}</p>
+          
           <p>{formatDistanceToNow(new Date(event.createdAt), { addSuffix: true })}</p>
         </div >
       )}

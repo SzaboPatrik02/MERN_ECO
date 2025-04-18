@@ -27,8 +27,8 @@ const Events = () => {
   }, [dispatch, user, sportevents])
 
   return (
-    <div className="home">
-      <div className="workouts">
+    <div className="page">
+      <div>
         {sportevents && sportevents.map((event) => (
           <EventDetails key={event._id} event={event} />
         ))}

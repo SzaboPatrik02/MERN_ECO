@@ -65,23 +65,29 @@ const NotificationDetails = ({ notification }) => {
   };
 
   return (
-    <div className="workout-details">
+    <div className="details">
       {!notification.read && (
         <button onClick={handleMarkAsRead} className="mark-as-read-btn">
           Mark as Read
         </button>
       )}
-      <span className="material-symbols-outlined noti" onClick={handleClick}>delete</span>
+      <span className="material-symbols-outlined" onClick={handleClick}>delete</span>
       {(notification.type === 'workout' || notification.type === 'advice') && (
-        <span className="material-symbols-outlined noti" onClick={handleRedirect}>reply</span>
+        <span className="reply material-symbols-outlined" onClick={handleRedirect}>reply</span>
       )}
-      <h4>Sender_id: {notification.sender_id}</h4>
-      <p><strong>content: </strong>{notification.content}</p>
-      <p><strong>related_id: </strong>{notification.related_id}</p>
+      <h4>{notification.content}</h4>
+      {notification.type === 'advice' && (
+        <p className='type type-advice'>type: {notification.type}</p>
+      )}
+      {notification.type === 'workout' && (
+        <p className='type type-workout'>type: {notification.type}</p>
+      )}
+
       <p><strong>read: </strong>{notification.read ? 'Yes' : 'No'}</p>
-      <p><strong>received_at: </strong>{notification.received_at}</p>
-      <p>received_at:{formatDistanceToNow(new Date(notification.received_at), { addSuffix: true })}</p>
+
       {!notification.read && <span className="unread-badge">NEW</span>}
+      <p><strong>received: </strong>{formatDistanceToNow(new Date(notification.received_at), { addSuffix: true })}</p>
+
     </div>
   )
 }

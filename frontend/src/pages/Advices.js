@@ -27,8 +27,8 @@ const Advices = () => {
   }, [dispatch, user, advices])
 
   return (
-    <div className="home">
-      <div className="workouts">
+    <div className="page">
+      <div>
         {advices && advices.map((advice) => (
           <AdviceDetails key={advice._id} advice={advice} />
         ))}

@@ -113,7 +113,7 @@ const User = () => {
     if (!confirmed) return
 
     try {
-      const response = await fetch(`/api/user/${user._id}/delete`, {
+      const response = await fetch(`/api/user/${user._id}/delete/delete`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${authUser.token}`,
@@ -124,8 +124,8 @@ const User = () => {
         if (authUser.user_id === user._id) {
           localStorage.removeItem('user');
           authDispatch({ type: 'LOGOUT' });
-          window.location.href = '/login';
           //authDispatch({ type: 'DELETE_USER', payload: { _id: user._id } });
+          window.location.href = '/login';
         } else {
           authDispatch({ type: 'DELETE_USER', payload: { _id: user._id } });
           alert('User deleted successfully');
@@ -133,11 +133,11 @@ const User = () => {
         }
       } else {
         const error = await response.json()
-        alert(`Error: ${error.error}`)
+        alert(`Error: ${error.error} - belso`)
       }
     } catch (err) {
       console.error("Error deleting user:", err)
-      alert("Unexpected error occurred.")
+      alert("Unexpected error occurred.-kulso")
     }
   }
 
@@ -165,8 +165,8 @@ const User = () => {
     <div className="user-profile">
       <div className="profile-header">
         <div className="profile-info">
-          <img src={user.profile_picture} alt="" style={{ width: '200px', height: '200px', borderRadius: '50%', objectFit: 'cover' }} />
-          <h2>{user.username}</h2>
+          <img src={user.profile_picture} />
+          <h2 className='usernametop'>{user.username}</h2>
           <p className="email">{user.email}</p>
           <p className="member-since">
             Member since: {format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm')}
@@ -190,6 +190,7 @@ const User = () => {
               </button>
             </div>
           )}
+
         </div>
       </div>
 
@@ -198,15 +199,15 @@ const User = () => {
           <h3>Edit Profile</h3>
 
           <label>Username:</label>
-          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <input type="text" className='username' value={username} onChange={(e) => setUsername(e.target.value)} />
 
           <label>Email:</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="email" className='email' value={email} onChange={(e) => setEmail(e.target.value)} />
 
           {(authUser?.user_id !== user._id && authUser?.role === 'admin') && (
             <div>
               <label>Role:</label>
-              <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <select value={role} className='role' onChange={(e) => setRole(e.target.value)}>
                 <option value="user">user</option>
                 <option value="admin">admin</option>
                 <option value="coach">coach</option>
@@ -218,16 +219,16 @@ const User = () => {
           <input type='file' id='fileInput' onChange={e => handleChange(e)} accept="image/png, image/jpeg, image/jpg" />
 
           <label>Introduction:</label>
-          <textarea value={aboutIntro} onChange={(e) => setAboutIntro(e.target.value)} />
+          <input value={aboutIntro} className='intro' onChange={(e) => setAboutIntro(e.target.value)} />
 
           <label>Favorite Sport:</label>
-          <input type="text" value={favSport} onChange={(e) => setFavSport(e.target.value)} />
+          <input type="text" className='favsport' value={favSport} onChange={(e) => setFavSport(e.target.value)} />
 
           <label>Last Completed Challenge:</label>
-          <input type="text" value={lastChallenge} onChange={(e) => setLastChallenge(e.target.value)} />
+          <input type="text" className='lastchal' value={lastChallenge} onChange={(e) => setLastChallenge(e.target.value)} />
 
           <label>Upcoming Event:</label>
-          <input type="text" value={upcomingEvent} onChange={(e) => setUpcomingEvent(e.target.value)} />
+          <input type="text" className='nextevent' value={upcomingEvent} onChange={(e) => setUpcomingEvent(e.target.value)} />
 
           <button type="submit">Save</button>
         </form>

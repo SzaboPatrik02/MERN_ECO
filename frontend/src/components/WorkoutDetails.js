@@ -113,7 +113,7 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
   }, [editedWorkout])
 
   return (
-    <div className="workout-details">
+    <div className="details">
       {isEditing ? (
         <form onSubmit={handleEdit}>
           <h3>Edit Workout</h3>
@@ -138,9 +138,11 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
               <span className="add material-symbols-outlined" onClick={handleNotifyCreator}>add</span>
             )
           )}
+          <p className='type type-workout'>{workout.type}</p>
           <h4>{workout.title}</h4>
           <p><strong>Load (kg): </strong>{workout.load}</p>
           <p><strong>Reps: </strong>{workout.reps}</p>
+          
           <p>{formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}</p>
         </div>
       )}

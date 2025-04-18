@@ -21,8 +21,8 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home">
-      <div className="workouts">
+    <div className="page">
+      <div>
         {data && data.map((d) => {
           if (d.type === 'challenge') {
             return<ChallengeDetails key={d._id} challenge={d} isMainPage={true}/>

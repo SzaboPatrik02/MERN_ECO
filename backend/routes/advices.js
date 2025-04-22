@@ -11,22 +11,16 @@ const checkCoach = require('../middleware/checkCoach')
 
 const router = express.Router()
 
-// require auth for all workout routes
 router.use(requireAuth)
 
-// GET all workouts
-router.get('/', getAdvices)
+router.get('/', checkCoach, getAdvices)
 
-//GET a single workout
-router.get('/:id', getAdvice)
+router.get('/:id', checkCoach, getAdvice)
 
-// POST a new workout
 router.post('/', checkCoach, createAdvice)
 
-// DELETE a workout
 router.delete('/:id', checkCoach, deleteAdvice)
 
-// UPDATE a workout
 router.patch('/:id', checkCoach, updateAdvice)
 
 

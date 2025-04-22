@@ -258,8 +258,6 @@ const EventDetails = ({ event, isMainPage }) => {
               <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} required />
               <label>Event date:</label>
               <input type="text" value={event_date} onChange={(e) => setEvent_date(e.target.value)} required />
-              <label>Group members:</label>
-              <input type="text" value={group_members} onChange={(e) => setGroup_members(e.target.value)} required />
               <label>Guess:</label>
               <input
                 type="text"

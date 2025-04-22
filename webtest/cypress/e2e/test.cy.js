@@ -263,7 +263,7 @@ describe('CRUD with workouts', () => {
             }
         })
     })
-    it('passDeleteEvent', () => {
+    it('passDeleteWorkout', () => {
         cy.login('david@gmail.com', 'abcABC123.');
         cy.url().should('eq', 'http://localhost:3000/');
 
@@ -531,14 +531,14 @@ describe('Getting notified by events', () => {
                     .parent()
                     .within(() => {
                         cy.get('p.to-achive').invoke('text').then((text) => {
-                            targetToAchieve = parseInt(text);
+                            targetToAchieve = text;
                         });
                         cy.get('h4').invoke('text').then((name) => {
                             challengeName = name;
                         });
                         cy.get('.edit').click();
                     });
-                cy.get('input').clear().type('5');
+                cy.get('input').clear().type('7');
                 cy.get('[type="submit"]').click();
 
                 cy.log('Target to achieve:', targetToAchieve);

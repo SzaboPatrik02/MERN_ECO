@@ -6,10 +6,8 @@ export const useLogout = () => {
   const { dispatch: dispatchWorkouts } = useWorkoutsContext()
 
   const logout = () => {
-    // remove user from storage
     localStorage.removeItem('user')
 
-    // dispatch logout action
     dispatch({ type: 'LOGOUT' })
     dispatchWorkouts({ type: 'SET_WORKOUTS', payload: null })
   }

@@ -4,14 +4,17 @@
   --primary: #208f73;
   --error: #e7195a;
 }
+
 body {
   background: #f1f1f1;
   margin: 0;
   font-family: "Poppins";
 }
+
 header {
   background: #fff;
 }
+
 header .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -20,11 +23,13 @@ header .container {
   align-items: center;
   justify-content: space-between;
 }
+
 header a {
   color: #333;
   text-decoration: none;
 }
-.pages{
+
+.pages {
   max-width: 1400px;
   padding: 20px;
   margin: 0 auto;
@@ -35,24 +40,35 @@ header a {
   grid-template-columns: 3fr 1fr;
   gap: 100px;
 }
+
 .details {
   background: #fff;
   border-radius: 4px;
   margin: 20px auto;
   padding: 20px;
   position: relative;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 }
+
 .details h4 {
   margin: 0 0 10px 0;
   font-size: 1.2em;
   color: var(--primary);
 }
+
 .details p {
   margin: 0;
   font-size: 0.9em;
   color: #555;
 }
+
+.details .winner-badge{
+  color: goldenrod;
+  font-size: large;
+  margin-left: 15px;
+  text-decoration: underline;
+}
+
 .details span {
   position: relative;
   float: right;
@@ -66,8 +82,14 @@ header a {
   margin: 0 8px;
 }
 
+
+.member-name:hover {
+  color: goldenrod;
+  cursor: pointer;
+}
+
 .take-away-btn {
-  background: orange;
+  background: goldenrod;
   border: 0;
   color: #fff;
   padding: 4px;
@@ -77,9 +99,11 @@ header a {
   cursor: pointer;
 }
 
-label, input {
+label,
+input {
   display: block;
 }
+
 input {
   padding: 10px;
   margin-top: 10px;
@@ -89,6 +113,7 @@ input {
   border-radius: 4px;
   box-sizing: border-box;
 }
+
 form button {
   background: var(--primary);
   margin: 3px;
@@ -110,8 +135,9 @@ form button {
   margin: 0px 0px 15px 0px;
   cursor: pointer;
 }
+
 form button:hover {
-  background: orange;
+  background: goldenrod;
 }
 
 div.error {
@@ -122,30 +148,35 @@ div.error {
   border-radius: 4px;
   margin: 20px 0;
 }
+
 input.error {
   border: 1px solid var(--error);
 }
-/*
 
-*/
 nav {
   display: flex;
   align-items: center;
 }
+
 .container h1 {
   color: var(--primary);
 }
+
 .container h1:hover {
-  color: orange;
+  color: goldenrod;
 }
+
 nav a:hover {
-  color: orange;
+  color: goldenrod;
 }
-nav a, nav button {
+
+nav a,
+nav button {
   margin-left: 10px;
   margin-right: 10px;
   color: var(--primary);
 }
+
 nav button {
   background: #fff;
   color: var(--primary);
@@ -156,6 +187,7 @@ nav button {
   cursor: pointer;
   font-size: 1em;
 }
+
 nav span {
   margin: 0 8px;
 }
@@ -166,6 +198,15 @@ nav span {
 
 .nav-notification {
   position: relative;
+}
+
+.profile-picture-nav {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-left: 8px;
+  object-fit: cover;
+  border: 2px solid goldenrod;
 }
 
 .notification-badge {
@@ -226,7 +267,7 @@ nav span {
   padding: 20px;
   margin-top: 20px;
   border-radius: 4px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .edit-form input,
@@ -246,21 +287,13 @@ nav span {
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 4px;
-  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 .send-message-btn {
   background: lightpink;
 }
 
-/*
------------------
-
-*/
-
-
-
-/* Beszélgetés konténer stílusai */
 .conversation-item {
   max-width: 600px;
   max-height: 70vh;
@@ -282,7 +315,6 @@ nav span {
   margin-bottom: 25px;
 }
 
-/* Görgetősáv testreszabása */
 .messages-container::-webkit-scrollbar {
   width: 10px;
 }
@@ -348,6 +380,7 @@ nav span {
   border-radius: 20px;
   position: relative;
 }
+
 .message-row.received .message-content {
   background-color: #f0f8f0;
   border-bottom-left-radius: 6px;
@@ -369,6 +402,7 @@ nav span {
 .conversation-partner {
   cursor: pointer;
 }
+
 .conversation-partner:hover {
   color: lightblue;
   text-decoration: underline;
@@ -423,11 +457,8 @@ nav span {
   background-color: #e0e0e0;
   cursor: not-allowed;
 }
-/*  
- alt="" style={{ width: '200px', height: '200px', borderRadius: '50%', objectFit: 'cover' }
-*/
 
-/* Profile picture */
+
 .profile-info img {
   width: 200px;
   height: 200px;
@@ -437,7 +468,8 @@ nav span {
   border: 5px solid goldenrod;
 }
 
-form.signup, form.login {
+form.signup,
+form.login {
   max-width: 400px;
   margin: 40px auto;
   padding: 20px;

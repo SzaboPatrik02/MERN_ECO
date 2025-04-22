@@ -13,7 +13,6 @@ const User = () => {
   const [isEditing, setIsEditing] = useState(false)
   const navigate = useNavigate()
 
-  // Lokális mezők
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('')
@@ -40,7 +39,6 @@ const User = () => {
           setUser(json)
           authDispatch({ type: 'SET_CURRENT_USER', payload: json })
 
-          // Form mezők beállítása
           setUsername(json.username)
           setEmail(json.email)
           setAboutIntro(json.about?.introduction || '')
@@ -101,7 +99,15 @@ const User = () => {
       if (response.ok) {
         setUser(json)
         setIsEditing(false)
-        authDispatch({ type: 'UPDATE_USER', payload: json })
+        if (authUser.user_id === userId) {
+          const updatedAuthUser = {
+            ...authUser,
+            ...json
+          }
+          localStorage.setItem('user', JSON.stringify(updatedAuthUser))
+          authDispatch({ type: 'LOGIN', payload: updatedAuthUser })
+        }
+        
       }
     } catch (err) {
       console.error('Error updating user:', err)
@@ -124,7 +130,6 @@ const User = () => {
         if (authUser.user_id === user._id) {
           localStorage.removeItem('user');
           authDispatch({ type: 'LOGOUT' });
-          //authDispatch({ type: 'DELETE_USER', payload: { _id: user._id } });
           window.location.href = '/login';
         } else {
           authDispatch({ type: 'DELETE_USER', payload: { _id: user._id } });

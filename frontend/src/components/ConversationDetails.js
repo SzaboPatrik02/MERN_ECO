@@ -100,8 +100,7 @@ const ConversationDetails = ({ conversation }) => {
         'Authorization': `Bearer ${user.token}`
       },
       body: JSON.stringify({
-        conversation_id: conversation._id,
-        messages: [...conversation.messages, newMessage]
+        messages: [newMessage]
       })
     });
 

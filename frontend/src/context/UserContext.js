@@ -9,30 +9,29 @@ export const usersReducer = (state, action) => {
                 ...state,
                 currentUser: action.payload
             }
-        case 'UPDATE_USER':
-            if (!action.payload || !action.payload._id) {
-                console.error('UPDATE_USER: Invalid payload', action.payload);
-                return state;
-            }
-
-            const updatedUsers = state.users?.map(user =>
-                user._id === action.payload._id ? { ...user, ...action.payload } : user
-            ) || state.users;
-
-            const newState = {
-                ...state,
-                users: updatedUsers
-            };
-
-            if (state.currentUser?._id === action.payload._id) {
-                newState.currentUser = { ...state.currentUser, ...action.payload };
-            }
-
-            if (state.viewedUser?._id === action.payload._id) {
-                newState.viewedUser = { ...state.viewedUser, ...action.payload };
-            }
-
-            return newState;
+            case 'UPDATE_USER':
+                if (!action.payload || !action.payload._id) {
+                    console.error('UPDATE_USER: Invalid payload', action.payload);
+                    return state;
+                }
+            
+                const updatedUsers = state.users?.map(user =>
+                    user._id === action.payload._id ? { ...user, ...action.payload } : user
+                ) || state.users;
+            
+                const updatedUser = action.payload;
+            
+                return {
+                    ...state,
+                    users: updatedUsers,
+                    currentUser: state.currentUser?._id === updatedUser._id
+                        ? { ...state.currentUser, ...updatedUser }
+                        : state.currentUser,
+                    viewedUser: state.viewedUser?._id === updatedUser._id
+                        ? { ...state.viewedUser, ...updatedUser }
+                        : state.viewedUser
+                };
+            
         case 'DELETE_USER':
             const isCurrentUser = state.currentUser?._id === action.payload._id;
             const isViewedUser = state.viewedUser?._id === action.payload._id;

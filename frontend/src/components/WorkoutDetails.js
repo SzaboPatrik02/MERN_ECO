@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useWorkoutsContext } from '../hooks/useWorkoutsContext'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { useNavigate } from 'react-router-dom';
 
 // date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow'
@@ -8,12 +9,10 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow'
 const WorkoutDetails = ({ workout, isMainPage }) => {
   const { dispatch } = useWorkoutsContext()
   const { user } = useAuthContext()
-
-  const [notificationSent, setNotificationSent] = useState(
-    localStorage.getItem(`notificationSent_${workout._id}`) === 'true'
-  );
+  const navigate = useNavigate()
 
   const [editedWorkout, setEditedWorkout] = useState(null);
+  const [users, setUsers] = useState([]);
 
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(workout.title)
@@ -21,8 +20,36 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
   const [reps, setReps] = useState(workout.reps)
 
   useEffect(() => {
-    localStorage.setItem(`notificationSent_${workout._id}`, notificationSent);
-  }, [notificationSent, workout._id]);
+    const fetchUsers = async () => {
+      if (!user) return;
+
+      try {
+        const response = await fetch('/api/user', {
+          headers: {
+            'Authorization': `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+        console.log("Felhasználók betöltve:", data);
+
+        if (response.ok) {
+          setUsers(data);
+        } else {
+          console.error("Hiba a felhasználók lekérdezésekor:", data.error);
+        }
+      } catch (error) {
+        console.error('Hálózati hiba:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [user]);
+
+  const handleMemberClick = (memberId) => {
+    navigate(`/user/${memberId}`);
+  }
 
   const handleNotifyCreator = async () => {
     if (!user) return;
@@ -31,12 +58,6 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
       alert("Saját edzésedre nem küldhetsz értesítést!");
       return;
     }
-
-    if (notificationSent) { 
-      alert("Már elküldted az értesítést a létrehozónak!");
-      return;
-    }
-  
     try {
       const response = await fetch(`/api/workouts/${workout._id}/notify`, {
         method: 'POST',
@@ -46,13 +67,12 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
           'Authorization': `Bearer ${user.token}`,
         },
       });
-  
+
       const json = await response.json();
       console.log("Szerver válasza:", json);
-  
+
       if (response.ok) {
         alert("Értesítés elküldve a létrehozónak!");
-        setNotificationSent(true);
       } else {
         alert(json.error);
       }
@@ -112,6 +132,8 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
     }
   }, [editedWorkout])
 
+  const creator = users.find(u => u._id === workout.user_id);
+
   return (
     <div className="details">
       {isEditing ? (
@@ -142,7 +164,11 @@ const WorkoutDetails = ({ workout, isMainPage }) => {
           <h4>{workout.title}</h4>
           <p><strong>Load (kg): </strong>{workout.load}</p>
           <p><strong>Reps: </strong>{workout.reps}</p>
-          
+          <p className="member-name"
+            onClick={() => handleMemberClick(workout.user_id)}>
+            <strong>Coach: </strong>{creator ? creator.username : "Ismeretlen felhasználó"}
+          </p>
+
           <p>{formatDistanceToNow(new Date(workout.createdAt), { addSuffix: true })}</p>
         </div>
       )}
